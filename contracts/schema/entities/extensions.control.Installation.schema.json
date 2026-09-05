@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Installation",
+  "x-ess-name": "extensions.control.Installation",
+  "x-ess-kind": "entity",
+  "type": "object",
+  "properties": {
+    "installation_id": {
+      "$ref": "#/$defs/extensions.control.InstallationId"
+    },
+    "tenant_id": {
+      "$ref": "#/$defs/extensions.control.TenantRef"
+    },
+    "name": {
+      "type": "string"
+    },
+    "release_id": {
+      "$ref": "#/$defs/extensions.control.ReleaseId",
+      "x-ess-relation": {
+        "name": "release",
+        "kind": "references",
+        "source": "extensions.control.Installation",
+        "target": "extensions.control.Release",
+        "cardinality": "one",
+        "via": "release_id"
+      }
+    },
+    "state": {
+      "$ref": "#/$defs/extensions.control.Installation.State"
+    }
+  },
+  "required": [
+    "installation_id",
+    "tenant_id",
+    "name",
+    "release_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "35f7c463ac16ae076579afcdac0635bbf34b9bc15d3c8bddb275f43517ae2afe",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.Installation.State": {
+      "title": "State",
+      "x-ess-name": "extensions.control.Installation.State",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Recorded"
+      ]
+    },
+    "extensions.control.InstallationId": {
+      "title": "InstallationId",
+      "x-ess-name": "extensions.control.InstallationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ReleaseId": {
+      "title": "ReleaseId",
+      "x-ess-name": "extensions.control.ReleaseId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.TenantRef": {
+      "title": "TenantRef",
+      "x-ess-name": "extensions.control.TenantRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

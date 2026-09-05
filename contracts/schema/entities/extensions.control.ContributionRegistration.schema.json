@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContributionRegistration",
+  "x-ess-name": "extensions.control.ContributionRegistration",
+  "x-ess-kind": "entity",
+  "type": "object",
+  "properties": {
+    "registration_id": {
+      "$ref": "#/$defs/extensions.control.RegistrationId"
+    },
+    "installation_id": {
+      "$ref": "#/$defs/extensions.control.InstallationId",
+      "x-ess-relation": {
+        "name": "registrations",
+        "kind": "owns",
+        "source": "extensions.control.Installation",
+        "target": "extensions.control.ContributionRegistration",
+        "cardinality": "many",
+        "via": "installation_id"
+      }
+    },
+    "contribution_id": {
+      "$ref": "#/$defs/extensions.control.ContributionId",
+      "x-ess-relation": {
+        "name": "declaration",
+        "kind": "references",
+        "source": "extensions.control.ContributionRegistration",
+        "target": "extensions.control.ContributionDeclaration",
+        "cardinality": "one",
+        "via": "contribution_id"
+      }
+    },
+    "state": {
+      "$ref": "#/$defs/extensions.control.ContributionRegistration.State"
+    }
+  },
+  "required": [
+    "registration_id",
+    "installation_id",
+    "contribution_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "156d52e6604ce9b5eacea9a8fe19cab5feba44094cc8c6741fb4a94922123bb6",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ContributionId": {
+      "title": "ContributionId",
+      "x-ess-name": "extensions.control.ContributionId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ContributionRegistration.State": {
+      "title": "State",
+      "x-ess-name": "extensions.control.ContributionRegistration.State",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Recorded"
+      ]
+    },
+    "extensions.control.InstallationId": {
+      "title": "InstallationId",
+      "x-ess-name": "extensions.control.InstallationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.RegistrationId": {
+      "title": "RegistrationId",
+      "x-ess-name": "extensions.control.RegistrationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

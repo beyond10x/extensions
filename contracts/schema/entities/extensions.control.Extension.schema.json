@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Extension",
+  "x-ess-name": "extensions.control.Extension",
+  "x-ess-kind": "entity",
+  "type": "object",
+  "properties": {
+    "extension_id": {
+      "$ref": "#/$defs/extensions.control.ExtensionId"
+    },
+    "state": {
+      "$ref": "#/$defs/extensions.control.Extension.State"
+    }
+  },
+  "required": [
+    "extension_id",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "60e0f681e96f42e33b7e6ad7ce00387c4ca4cb87f7a0e136e1c137d2429be172",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.Extension.State": {
+      "title": "State",
+      "x-ess-name": "extensions.control.Extension.State",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Recorded"
+      ]
+    },
+    "extensions.control.ExtensionId": {
+      "title": "ExtensionId",
+      "x-ess-name": "extensions.control.ExtensionId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.ContributionCategory",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "ce03fe8fe0306879e469c9bb3d82f61a772bf6e3b80a96a452be0db06c365ff9",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ContributionCategory": {
+      "title": "ContributionCategory",
+      "x-ess-name": "extensions.control.ContributionCategory",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Domain",
+        "Ui",
+        "Connector",
+        "Agent",
+        "Workflow",
+        "Background",
+        "Policy"
+      ]
+    }
+  }
+}

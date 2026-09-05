@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.ReleaseId",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "186da2776198b5c6982d7dc40cb3e6a21b16ba9f5523cc7e94dd0d792c036d32",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ReleaseId": {
+      "title": "ReleaseId",
+      "x-ess-name": "extensions.control.ReleaseId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.ArtifactReference",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "10223fad5749158877dd93637e5a2a85f811c86de651bb5758b42433802add43",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ArtifactReference": {
+      "title": "ArtifactReference",
+      "x-ess-name": "extensions.control.ArtifactReference",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "sha256"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

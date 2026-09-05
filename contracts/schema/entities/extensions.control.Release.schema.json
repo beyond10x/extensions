@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Release",
+  "x-ess-name": "extensions.control.Release",
+  "x-ess-kind": "entity",
+  "type": "object",
+  "properties": {
+    "release_id": {
+      "$ref": "#/$defs/extensions.control.ReleaseId"
+    },
+    "extension_id": {
+      "$ref": "#/$defs/extensions.control.ExtensionId",
+      "x-ess-relation": {
+        "name": "releases",
+        "kind": "owns",
+        "source": "extensions.control.Extension",
+        "target": "extensions.control.Release",
+        "cardinality": "many",
+        "via": "extension_id"
+      }
+    },
+    "specification": {
+      "$ref": "#/$defs/extensions.control.ArtifactReference"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/extensions.control.ArtifactReference"
+      }
+    },
+    "state": {
+      "$ref": "#/$defs/extensions.control.Release.State"
+    }
+  },
+  "required": [
+    "release_id",
+    "extension_id",
+    "specification",
+    "artifacts",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "0089f0e41f5cae86bd62b1c07add398eaa691600ef34af0f3f41227009115eac",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ArtifactReference": {
+      "title": "ArtifactReference",
+      "x-ess-name": "extensions.control.ArtifactReference",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ExtensionId": {
+      "title": "ExtensionId",
+      "x-ess-name": "extensions.control.ExtensionId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.Release.State": {
+      "title": "State",
+      "x-ess-name": "extensions.control.Release.State",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Recorded"
+      ]
+    },
+    "extensions.control.ReleaseId": {
+      "title": "ReleaseId",
+      "x-ess-name": "extensions.control.ReleaseId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

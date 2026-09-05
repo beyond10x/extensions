@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.ContributionDeclaration.State",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "325fb7a2d98f7cc635e0ee1ff87fdcb04a241201faeba7ec5f3ac36aebfb21da",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ContributionDeclaration.State": {
+      "title": "State",
+      "x-ess-name": "extensions.control.ContributionDeclaration.State",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Recorded"
+      ]
+    }
+  }
+}

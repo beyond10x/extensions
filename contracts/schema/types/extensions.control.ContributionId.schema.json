@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.ContributionId",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "52840a8e6312d60cd543518a8d6fdba1a8852ffc05c3071f033a940bf5ef50e3",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ContributionId": {
+      "title": "ContributionId",
+      "x-ess-name": "extensions.control.ContributionId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

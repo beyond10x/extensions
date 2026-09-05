@@ -1,0 +1,8 @@
+format: ess/1
+system: extensions
+version: v1
+summary: >-
+  Structural control-domain model for independently released extensions and named tenant
+  installations. Runtime activation, authorization and policy behavior remain to be specified.
+domains:
+  - extensions.control

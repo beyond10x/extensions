@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContributionDeclaration",
+  "x-ess-name": "extensions.control.ContributionDeclaration",
+  "x-ess-kind": "entity",
+  "type": "object",
+  "properties": {
+    "contribution_id": {
+      "$ref": "#/$defs/extensions.control.ContributionId"
+    },
+    "release_id": {
+      "$ref": "#/$defs/extensions.control.ReleaseId",
+      "x-ess-relation": {
+        "name": "contributions",
+        "kind": "owns",
+        "source": "extensions.control.Release",
+        "target": "extensions.control.ContributionDeclaration",
+        "cardinality": "many",
+        "via": "release_id"
+      }
+    },
+    "category": {
+      "$ref": "#/$defs/extensions.control.ContributionCategory"
+    },
+    "owning_runtime": {
+      "type": "string"
+    },
+    "compatibility_contract": {
+      "$ref": "#/$defs/extensions.control.ArtifactReference"
+    },
+    "state": {
+      "$ref": "#/$defs/extensions.control.ContributionDeclaration.State"
+    }
+  },
+  "required": [
+    "contribution_id",
+    "release_id",
+    "category",
+    "owning_runtime",
+    "compatibility_contract",
+    "state"
+  ],
+  "additionalProperties": false,
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "ed3b61725b9523a10b8aa00907141926f3d8655ebdca7fd7e0756600b1f8558c",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ArtifactReference": {
+      "title": "ArtifactReference",
+      "x-ess-name": "extensions.control.ArtifactReference",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ContributionCategory": {
+      "title": "ContributionCategory",
+      "x-ess-name": "extensions.control.ContributionCategory",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Domain",
+        "Ui",
+        "Connector",
+        "Agent",
+        "Workflow",
+        "Background",
+        "Policy"
+      ]
+    },
+    "extensions.control.ContributionDeclaration.State": {
+      "title": "State",
+      "x-ess-name": "extensions.control.ContributionDeclaration.State",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Recorded"
+      ]
+    },
+    "extensions.control.ContributionId": {
+      "title": "ContributionId",
+      "x-ess-name": "extensions.control.ContributionId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ReleaseId": {
+      "title": "ReleaseId",
+      "x-ess-name": "extensions.control.ReleaseId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+components:
+  - component: extensions
+    summary: Owns extension control records; referenced foundation resources retain their owners.
+    owns:
+      domains:
+        - extensions.control
+    # No command, event or network API is claimed by this structural model.

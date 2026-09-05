@@ -1,0 +1,157 @@
+domain: extensions.control
+summary: Release declarations and installation-specific control records.
+
+types:
+  # Opaque logical identifiers: repository names and deployment addresses are not identities.
+  # UNMAPPED: identifier allocation and canonical wire spelling need the public API design.
+  - name: extensions.control.ExtensionId
+    kind: newtype
+    of: String
+  - name: extensions.control.ReleaseId
+    kind: newtype
+    of: String
+  - name: extensions.control.InstallationId
+    kind: newtype
+    of: String
+  - name: extensions.control.ContributionId
+    kind: newtype
+    of: String
+  - name: extensions.control.RegistrationId
+    kind: newtype
+    of: String
+  - name: extensions.control.TenantRef
+    kind: newtype
+    of: String
+
+  - name: extensions.control.ArtifactReference
+    kind: struct
+    fields:
+      - name: location
+        type: String
+      - name: sha256
+        type: String
+    # UNMAPPED: canonical locations, digest syntax and integrity admission require explicit
+    # validation rules before installation commands can consume these references.
+
+  - name: extensions.control.ContributionCategory
+    kind: enum
+    variants: [Domain, Ui, Connector, Agent, Workflow, Background, Policy]
+
+entities:
+  - name: extensions.control.Extension
+    identity:
+      name: extension_id
+      type: extensions.control.ExtensionId
+    fields: []
+    relations:
+      - name: releases
+        kind: owns
+        target: extensions.control.Release
+        cardinality: many
+        via: extension_id
+    lifecycle:
+      initial: Recorded
+      states: [Recorded]
+      terminal: [Recorded]
+
+  - name: extensions.control.Release
+    identity:
+      name: release_id
+      type: extensions.control.ReleaseId
+    fields:
+      - name: extension_id
+        type: extensions.control.ExtensionId
+      - name: specification
+        type: extensions.control.ArtifactReference
+      - name: artifacts
+        type: List<extensions.control.ArtifactReference>
+    relations:
+      - name: contributions
+        kind: owns
+        target: extensions.control.ContributionDeclaration
+        cardinality: many
+        via: release_id
+    # Immutable release declarations are the architecture requirement. No update command exists
+    # here; later command semantics must enforce immutability and exact revision provenance.
+    lifecycle:
+      initial: Recorded
+      states: [Recorded]
+      terminal: [Recorded]
+
+  - name: extensions.control.ContributionDeclaration
+    identity:
+      name: contribution_id
+      type: extensions.control.ContributionId
+    fields:
+      - name: release_id
+        type: extensions.control.ReleaseId
+      - name: category
+        type: extensions.control.ContributionCategory
+      - name: owning_runtime
+        type: String
+      - name: compatibility_contract
+        type: extensions.control.ArtifactReference
+    # UNMAPPED: resolve owning_runtime and the referenced compatibility contract against admitted
+    # runtime capabilities. Concrete agent/workflow/Connector definitions remain owner contracts.
+    lifecycle:
+      initial: Recorded
+      states: [Recorded]
+      terminal: [Recorded]
+
+  - name: extensions.control.Installation
+    identity:
+      name: installation_id
+      type: extensions.control.InstallationId
+    fields:
+      # A persisted ownership fact supplied by verified authentication, never an operation selector.
+      - name: tenant_id
+        type: extensions.control.TenantRef
+      - name: name
+        type: String
+      - name: release_id
+        type: extensions.control.ReleaseId
+    relations:
+      - name: release
+        kind: references
+        target: extensions.control.Release
+        cardinality: one
+        via: release_id
+      - name: registrations
+        kind: owns
+        target: extensions.control.ContributionRegistration
+        cardinality: many
+        via: installation_id
+    # UNMAPPED: Identity owns the external tenant; its ESS reference contract and tenant deletion
+    # consequences are not declared here. Do not invent a locally owned Tenant entity.
+    # UNMAPPED: tenant-scoped name uniqueness, configuration ownership/schema, binding targets,
+    # lifecycle/version/configuration locks, editable settings, count reservations and retention
+    # require typed contracts and command outcomes before implementation decomposition.
+    lifecycle:
+      initial: Recorded
+      states: [Recorded]
+      terminal: [Recorded]
+
+  - name: extensions.control.ContributionRegistration
+    identity:
+      name: registration_id
+      type: extensions.control.RegistrationId
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: contribution_id
+        type: extensions.control.ContributionId
+    relations:
+      - name: declaration
+        kind: references
+        target: extensions.control.ContributionDeclaration
+        cardinality: one
+        via: contribution_id
+    # UNMAPPED: the declaration must belong to the installation's selected release. Define the
+    # cross-record admission check together with the registration command and upgrade semantics.
+    # UNMAPPED: foundation resource-reference cardinality, idempotent registration identity,
+    # readiness, partial failure and recovery require their owner contracts and causal commands.
+    # The control record does not own an agent, workflow run, Connection, grant or business data.
+    lifecycle:
+      initial: Recorded
+      states: [Recorded]
+      terminal: [Recorded]

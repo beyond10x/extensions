@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.Installation.State",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
+    "contract_digest": "2e1713aec429a02f2e961e3e4947adc462fec9eea94ab22419b1e2f1bf995092",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.Installation.State": {
+      "title": "State",
+      "x-ess-name": "extensions.control.Installation.State",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Recorded"
+      ]
+    }
+  }
+}
