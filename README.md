@@ -19,8 +19,8 @@ The source is [ess/system.yaml](ess/system.yaml), with
 | Record | Role |
 |---|---|
 | Extension | Stable identity independent of repository naming |
-| Release | An extension's immutable specification, artifacts and contribution declarations |
-| Installation | A named tenant-owned instance selecting a release |
+| Release | Immutable specification, artifacts, contributions, configuration contract and policy constraints |
+| Installation | Named tenant-owned instance selecting a release, configuration, origin and effective policy |
 | ContributionDeclaration | A release-owned declaration naming its category, runtime and compatibility contract |
 | ContributionRegistration | An installation-owned control record referring to a contribution declaration |
 
@@ -45,6 +45,12 @@ The gate checks formatting and Clippy, validates all ESS fragments, compiles the
 generates schemas twice and compares them against the committed outputs. Three mutated models
 must be refused for an unknown relation target, a mistyped relation carrier and a second owner.
 These are compiler and structural-contract checks, not installation-runtime tests.
+
+Schema fixtures also exercise configuration references, preinstallation identity, independent
+locks, scoped limits and count membership. Numeric ESS invariants remain annotations in these
+projections; the gate explicitly confirms that schema validation alone does not enforce them.
+The [configuration and policy proposal](docs/model.md#configuration-and-installation-policy-proposal)
+defines admission, retry and count requirements for the later runtime.
 
 Regenerate the schema tree after an intentional model change:
 

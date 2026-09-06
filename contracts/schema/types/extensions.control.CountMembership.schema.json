@@ -1,21 +1,22 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$ref": "#/$defs/extensions.control.Installation.State",
+  "$ref": "#/$defs/extensions.control.CountMembership",
   "x-ess-provenance": {
     "system": "extensions",
     "specification_version": "v1",
     "source_digest": "7a46153c4886311fa3e83b4f41cee2b8fdde849369f1eb0845ee39cc8b0f1401",
-    "contract_digest": "9f6f50af026d41a45ffebae203345340118ab6a582cc805f6e9aa7ff426e1d62",
+    "contract_digest": "045861e1037c1b373d4e1d966b48f6d67720f67f7e895568a2d9039e003023c8",
     "regenerate": "ess generate"
   },
   "$defs": {
-    "extensions.control.Installation.State": {
-      "title": "State",
-      "x-ess-name": "extensions.control.Installation.State",
+    "extensions.control.CountMembership": {
+      "title": "CountMembership",
+      "x-ess-name": "extensions.control.CountMembership",
       "x-ess-kind": "enum",
       "type": "string",
       "enum": [
-        "Recorded"
+        "Held",
+        "Released"
       ]
     }
   }

@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.PolicySnapshot",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "7a46153c4886311fa3e83b4f41cee2b8fdde849369f1eb0845ee39cc8b0f1401",
+    "contract_digest": "a3528fad01152fe8f51d519e9e3541ceb287c8df1c7ca48b3606e0155d4d8b9b",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ConfigurationPath": {
+      "title": "ConfigurationPath",
+      "x-ess-name": "extensions.control.ConfigurationPath",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.InstallationCount": {
+      "title": "InstallationCount",
+      "x-ess-name": "extensions.control.InstallationCount",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value >= 0"
+      ]
+    },
+    "extensions.control.InstallationLimit": {
+      "title": "InstallationLimit",
+      "x-ess-name": "extensions.control.InstallationLimit",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/extensions.control.LimitScope"
+        },
+        "maximum": {
+          "$ref": "#/$defs/extensions.control.InstallationCount"
+        }
+      },
+      "required": [
+        "scope",
+        "maximum"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.InstallationLocks": {
+      "title": "InstallationLocks",
+      "x-ess-name": "extensions.control.InstallationLocks",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "version_updates": {
+          "type": "boolean"
+        },
+        "enable_disable": {
+          "type": "boolean"
+        },
+        "removal": {
+          "type": "boolean"
+        },
+        "configuration": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "version_updates",
+        "enable_disable",
+        "removal",
+        "configuration"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.InstallationPolicy": {
+      "title": "InstallationPolicy",
+      "x-ess-name": "extensions.control.InstallationPolicy",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "locks": {
+          "$ref": "#/$defs/extensions.control.InstallationLocks"
+        },
+        "editable_settings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/extensions.control.ConfigurationPath"
+          }
+        },
+        "count_limits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/extensions.control.InstallationLimit"
+          }
+        }
+      },
+      "required": [
+        "locks",
+        "editable_settings",
+        "count_limits"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.LimitScope": {
+      "title": "LimitScope",
+      "x-ess-name": "extensions.control.LimitScope",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Tenant",
+        "Deployment"
+      ]
+    },
+    "extensions.control.PolicyRevision": {
+      "title": "PolicyRevision",
+      "x-ess-name": "extensions.control.PolicyRevision",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.PolicySnapshot": {
+      "title": "PolicySnapshot",
+      "x-ess-name": "extensions.control.PolicySnapshot",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/extensions.control.PolicyRevision"
+        },
+        "rules": {
+          "$ref": "#/$defs/extensions.control.InstallationPolicy"
+        }
+      },
+      "required": [
+        "revision",
+        "rules"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

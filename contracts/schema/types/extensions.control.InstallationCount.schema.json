@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.InstallationCount",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "7a46153c4886311fa3e83b4f41cee2b8fdde849369f1eb0845ee39cc8b0f1401",
+    "contract_digest": "cc498fd4002ee42790ee706f0df5c4b2221a3ec371773e91eed5e46384a3acbc",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.InstallationCount": {
+      "title": "InstallationCount",
+      "x-ess-name": "extensions.control.InstallationCount",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value >= 0"
+      ]
+    }
+  }
+}

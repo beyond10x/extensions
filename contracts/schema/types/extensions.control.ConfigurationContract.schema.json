@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.ConfigurationContract",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "7a46153c4886311fa3e83b4f41cee2b8fdde849369f1eb0845ee39cc8b0f1401",
+    "contract_digest": "171ea8d85be1726165597d853268ba4a740e0ba38011a716e4e80f83802ca6f0",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ArtifactReference": {
+      "title": "ArtifactReference",
+      "x-ess-name": "extensions.control.ArtifactReference",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ConfigurationContract": {
+      "title": "ConfigurationContract",
+      "x-ess-name": "extensions.control.ConfigurationContract",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "dialect": {
+          "$ref": "#/$defs/extensions.control.ConfigurationDialect"
+        },
+        "schema": {
+          "$ref": "#/$defs/extensions.control.ArtifactReference"
+        }
+      },
+      "required": [
+        "dialect",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ConfigurationDialect": {
+      "title": "ConfigurationDialect",
+      "x-ess-name": "extensions.control.ConfigurationDialect",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "JsonSchema202012"
+      ]
+    }
+  }
+}

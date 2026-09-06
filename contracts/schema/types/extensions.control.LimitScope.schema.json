@@ -1,21 +1,22 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$ref": "#/$defs/extensions.control.Installation.State",
+  "$ref": "#/$defs/extensions.control.LimitScope",
   "x-ess-provenance": {
     "system": "extensions",
     "specification_version": "v1",
     "source_digest": "7a46153c4886311fa3e83b4f41cee2b8fdde849369f1eb0845ee39cc8b0f1401",
-    "contract_digest": "9f6f50af026d41a45ffebae203345340118ab6a582cc805f6e9aa7ff426e1d62",
+    "contract_digest": "0d0e2285ec3eb05789426e9fcfdd2498942447e790c556898f61cbf402babdd3",
     "regenerate": "ess generate"
   },
   "$defs": {
-    "extensions.control.Installation.State": {
-      "title": "State",
-      "x-ess-name": "extensions.control.Installation.State",
+    "extensions.control.LimitScope": {
+      "title": "LimitScope",
+      "x-ess-name": "extensions.control.LimitScope",
       "x-ess-kind": "enum",
       "type": "string",
       "enum": [
-        "Recorded"
+        "Tenant",
+        "Deployment"
       ]
     }
   }

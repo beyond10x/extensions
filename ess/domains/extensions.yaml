@@ -22,6 +22,37 @@ types:
   - name: extensions.control.TenantRef
     kind: newtype
     of: String
+  - name: extensions.control.DeploymentRef
+    kind: newtype
+    of: String
+  - name: extensions.control.AdmissionKey
+    kind: newtype
+    of: String
+  - name: extensions.control.PreinstallationKey
+    kind: newtype
+    of: String
+  - name: extensions.control.ConfigurationPath
+    kind: newtype
+    of: String
+    # A canonical JSON Pointer to one complete setting, without wildcard or prefix matching.
+    # UNMAPPED: a typed parser must enforce path syntax and setting boundaries before admission.
+  - name: extensions.control.ConfigurationDocumentKey
+    kind: newtype
+    of: String
+    # An opaque key inside this installation's namespace, never a caller-selected fetch URL.
+  - name: extensions.control.ConfigurationRevision
+    kind: newtype
+    of: Integer
+    invariants:
+      - value > 0
+  - name: extensions.control.PolicyRevision
+    kind: newtype
+    of: String
+  - name: extensions.control.InstallationCount
+    kind: newtype
+    of: Integer
+    invariants:
+      - value >= 0
 
   - name: extensions.control.ArtifactReference
     kind: struct
@@ -36,6 +67,92 @@ types:
   - name: extensions.control.ContributionCategory
     kind: enum
     variants: [Domain, Ui, Connector, Agent, Workflow, Background, Policy]
+
+  - name: extensions.control.ConfigurationDialect
+    kind: enum
+    variants: [JsonSchema202012]
+
+  - name: extensions.control.ConfigurationContract
+    kind: struct
+    fields:
+      - name: dialect
+        type: extensions.control.ConfigurationDialect
+      - name: schema
+        type: extensions.control.ArtifactReference
+
+  - name: extensions.control.ConfigurationSnapshot
+    kind: struct
+    fields:
+      - name: revision
+        type: extensions.control.ConfigurationRevision
+      - name: document_key
+        type: extensions.control.ConfigurationDocumentKey
+      - name: sha256
+        type: String
+    # The selected release supplies the schema. Documents are immutable, installation-owned
+    # values; this snapshot and release_id switch together only after compatibility checks.
+    # UNMAPPED: persistence, digest verification and optimistic updates require causal commands.
+
+  - name: extensions.control.InstallationOrigin
+    kind: union
+    tag: kind
+    variants:
+      requested: extensions.control.AdmissionKey
+      preinstalled: extensions.control.PreinstallationKey
+
+  - name: extensions.control.InstallationLocks
+    kind: struct
+    fields:
+      - name: version_updates
+        type: Boolean
+      - name: enable_disable
+        type: Boolean
+      - name: removal
+        type: Boolean
+      - name: configuration
+        type: Boolean
+
+  - name: extensions.control.LimitScope
+    kind: enum
+    variants: [Tenant, Deployment]
+
+  - name: extensions.control.InstallationLimit
+    kind: struct
+    fields:
+      - name: scope
+        type: extensions.control.LimitScope
+      - name: maximum
+        type: extensions.control.InstallationCount
+
+  - name: extensions.control.InstallationPolicy
+    kind: struct
+    fields:
+      - name: locks
+        type: extensions.control.InstallationLocks
+      - name: editable_settings
+        type: List<extensions.control.ConfigurationPath>
+      - name: count_limits
+        type: List<extensions.control.InstallationLimit>
+    # Release constraints and deployment rules use this same shape. Resolve with OR for locks,
+    # exact intersection for editable settings and minimum for limits in each applicable scope.
+    # No limit entry means no additional restriction from that layer; maximum zero denies new
+    # admissions. Editable settings are exceptions only to the configuration lock.
+
+  - name: extensions.control.PolicySnapshot
+    kind: struct
+    fields:
+      - name: revision
+        type: extensions.control.PolicyRevision
+      - name: rules
+        type: extensions.control.InstallationPolicy
+    # Evidence of a resolution, never an authority token. Re-resolve current policy per operation.
+    # UNMAPPED: source revision identity and race-free policy resolution need the admission design.
+
+  - name: extensions.control.CountMembership
+    kind: enum
+    variants: [Held, Released]
+    # Held includes pending, failed, disabled and removing installations. Confirmed removal
+    # releases capacity; this observation is not an independently writable lifecycle state.
 
 entities:
   - name: extensions.control.Extension
@@ -65,6 +182,10 @@ entities:
         type: extensions.control.ArtifactReference
       - name: artifacts
         type: List<extensions.control.ArtifactReference>
+      - name: configuration_contract
+        type: extensions.control.ConfigurationContract
+      - name: policy_constraints
+        type: extensions.control.InstallationPolicy
     relations:
       - name: contributions
         kind: owns
@@ -110,6 +231,16 @@ entities:
         type: String
       - name: release_id
         type: extensions.control.ReleaseId
+      - name: deployment_id
+        type: extensions.control.DeploymentRef
+      - name: origin
+        type: extensions.control.InstallationOrigin
+      - name: configuration
+        type: extensions.control.ConfigurationSnapshot
+      - name: policy_snapshot
+        type: extensions.control.PolicySnapshot
+      - name: count_membership
+        type: extensions.control.CountMembership
     relations:
       - name: release
         kind: references
@@ -123,9 +254,10 @@ entities:
         via: installation_id
     # UNMAPPED: Identity owns the external tenant; its ESS reference contract and tenant deletion
     # consequences are not declared here. Do not invent a locally owned Tenant entity.
-    # UNMAPPED: tenant-scoped name uniqueness, configuration ownership/schema, binding targets,
-    # lifecycle/version/configuration locks, editable settings, count reservations and retention
-    # require typed contracts and command outcomes before implementation decomposition.
+    # UNMAPPED: deployment identity is supplied by trusted bootstrap; its public owner reference
+    # contract is not declared here. There is no locally owned Deployment entity.
+    # UNMAPPED: tenant-scoped name uniqueness, authenticated retry-key encoding, binding targets,
+    # atomic multi-scope count reservations and retained-data transitions require causal commands.
     lifecycle:
       initial: Recorded
       states: [Recorded]
