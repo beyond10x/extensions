@@ -154,6 +154,189 @@ types:
     # Held includes pending, failed, disabled and removing installations. Confirmed removal
     # releases capacity; this observation is not an independently writable lifecycle state.
 
+  # Binding values are installation-owned selection and compatibility evidence, never grants.
+  # UNMAPPED: admitted capability registry, action admission and owner resource cardinality.
+  # Draft generation and attempt are counters; OwnerRegistrationKey is stable across both.
+  # UNMAPPED: exact key encoding, equality, durable replay and atomic owner recovery contracts.
+  - name: extensions.control.BindingName
+    kind: newtype
+    of: String
+
+  - name: extensions.control.CapabilityRef
+    kind: newtype
+    of: String
+
+  - name: extensions.control.CompatibilityRevision
+    kind: newtype
+    of: String
+
+  - name: extensions.control.OwnerRegistrationKey
+    kind: newtype
+    of: String
+
+  - name: extensions.control.OwnerReceiptRef
+    kind: newtype
+    of: String
+
+  - name: extensions.control.BindingRevision
+    kind: newtype
+    of: Integer
+    invariants:
+      - value > 0
+
+  - name: extensions.control.ReconciliationGeneration
+    kind: newtype
+    of: Integer
+    invariants:
+      - value > 0
+
+  - name: extensions.control.RetryAttempt
+    kind: newtype
+    of: Integer
+    invariants:
+      - value > 0
+
+  - name: extensions.control.FoundationBindingTarget
+    kind: struct
+    fields:
+      - name: capability
+        type: extensions.control.CapabilityRef
+
+  - name: extensions.control.InstallationBindingTarget
+    kind: struct
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: capability
+        type: extensions.control.CapabilityRef
+
+  - name: extensions.control.BindingTarget
+    kind: union
+    tag: kind
+    variants:
+      foundation: extensions.control.FoundationBindingTarget
+      installation: extensions.control.InstallationBindingTarget
+
+  - name: extensions.control.BindingCompatibility
+    kind: struct
+    fields:
+      - name: revision
+        type: extensions.control.CompatibilityRevision
+      - name: contract
+        type: extensions.control.ArtifactReference
+
+  - name: extensions.control.BindingSelection
+    kind: struct
+    fields:
+      - name: name
+        type: extensions.control.BindingName
+      - name: target
+        type: extensions.control.BindingTarget
+      - name: compatibility
+        type: extensions.control.BindingCompatibility
+
+  - name: extensions.control.BindingSnapshot
+    kind: struct
+    fields:
+      - name: revision
+        type: extensions.control.BindingRevision
+      - name: selections
+        type: List<extensions.control.BindingSelection>
+
+  - name: extensions.control.ContributionRequirement
+    kind: enum
+    variants: [Required, Optional]
+
+  - name: extensions.control.ActivationSnapshot
+    kind: struct
+    fields:
+      - name: release_id
+        type: extensions.control.ReleaseId
+      - name: configuration
+        type: extensions.control.ConfigurationSnapshot
+      - name: bindings
+        type: extensions.control.BindingSnapshot
+
+  - name: extensions.control.ActivationAttempt
+    kind: struct
+    fields:
+      - name: generation
+        type: extensions.control.ReconciliationGeneration
+      - name: attempt
+        type: extensions.control.RetryAttempt
+      - name: snapshot
+        type: extensions.control.ActivationSnapshot
+
+  - name: extensions.control.FailureCode
+    kind: enum
+    variants: [OwnerUnavailable, OwnerRefused, BindingUnavailable, IncompatibleBinding, RequiredContributionFailed, InvalidConfiguration]
+
+  - name: extensions.control.FailureEvidence
+    kind: struct
+    fields:
+      - name: code
+        type: extensions.control.FailureCode
+      - name: detail
+        type: String
+      - name: retryable
+        type: Boolean
+
+  - name: extensions.control.ActivationFailure
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.ActivationAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.ActivationProgress
+    kind: union
+    tag: kind
+    variants:
+      running: extensions.control.ActivationAttempt
+      active: extensions.control.ActivationAttempt
+      failed: extensions.control.ActivationFailure
+
+  - name: extensions.control.RegistrationAttempt
+    kind: struct
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: contribution_id
+        type: extensions.control.ContributionId
+      - name: activation
+        type: extensions.control.ActivationAttempt
+      - name: attempt
+        type: extensions.control.RetryAttempt
+
+  - name: extensions.control.RegistrationReady
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.RegistrationAttempt
+      - name: receipt
+        type: extensions.control.OwnerReceiptRef
+
+  - name: extensions.control.RegistrationFailure
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.RegistrationAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.RegistrationProgress
+    kind: union
+    tag: kind
+    variants:
+      registering: extensions.control.RegistrationAttempt
+      ready: extensions.control.RegistrationReady
+      failed: extensions.control.RegistrationFailure
+
+  - name: extensions.control.ReconciliationRefusalReason
+    kind: enum
+    variants: [Unauthorized, StaleSnapshot, ReleaseMismatch, RequiredNotReady, OwnerNotReady, IncompatibleBinding, RetryConflict, InvalidEvidence]
+
 entities:
   - name: extensions.control.Extension
     identity:
@@ -208,6 +391,8 @@ entities:
         type: extensions.control.ReleaseId
       - name: category
         type: extensions.control.ContributionCategory
+      - name: requirement
+        type: extensions.control.ContributionRequirement
       - name: owning_runtime
         type: String
       - name: compatibility_contract
@@ -241,6 +426,10 @@ entities:
         type: extensions.control.PolicySnapshot
       - name: count_membership
         type: extensions.control.CountMembership
+      - name: bindings
+        type: extensions.control.BindingSnapshot
+      - name: activation
+        type: Optional<extensions.control.ActivationProgress>
     relations:
       - name: release
         kind: references
@@ -256,12 +445,24 @@ entities:
     # consequences are not declared here. Do not invent a locally owned Tenant entity.
     # UNMAPPED: deployment identity is supplied by trusted bootstrap; its public owner reference
     # contract is not declared here. There is no locally owned Deployment entity.
-    # UNMAPPED: tenant-scoped name uniqueness, authenticated retry-key encoding, binding targets,
-    # atomic multi-scope count reservations and retained-data transitions require causal commands.
+    # UNMAPPED: tenant-scoped name uniqueness, authenticated retry-key encoding,
+    # atomic multi-scope count reservations and retained-data transitions require runtime contracts.
+    # Bindings have no tenant/actor/realm/executor input: selectors resolve after authentication.
+    # Snapshot equality, generation freshness and field assignment are runtime obligations.
     lifecycle:
       initial: Recorded
-      states: [Recorded]
-      terminal: [Recorded]
+      states: [Recorded, Activating, Active, ActivationFailed]
+      terminal: [Active]
+      transitions:
+        - name: begin-activation
+          from: [Recorded, ActivationFailed]
+          to: Activating
+        - name: confirm-active
+          from: [Activating]
+          to: Active
+        - name: fail-activation
+          from: [Activating]
+          to: ActivationFailed
 
   - name: extensions.control.ContributionRegistration
     identity:
@@ -272,18 +473,283 @@ entities:
         type: extensions.control.InstallationId
       - name: contribution_id
         type: extensions.control.ContributionId
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+      - name: progress
+        type: Optional<extensions.control.RegistrationProgress>
     relations:
       - name: declaration
         kind: references
         target: extensions.control.ContributionDeclaration
         cardinality: one
         via: contribution_id
-    # UNMAPPED: the declaration must belong to the installation's selected release. Define the
-    # cross-record admission check together with the registration command and upgrade semantics.
-    # UNMAPPED: foundation resource-reference cardinality, idempotent registration identity,
-    # readiness, partial failure and recovery require their owner contracts and causal commands.
+    # Runtime obligations: declaration belongs to the selected immutable release; owner-only
+    # observation matches installation, declaration, stable key and current activation snapshot.
+    # Never derive the stable key from generation/attempt, even after an ambiguous owner response.
+    # UNMAPPED: owner resource-reference cardinality, key encoding and atomic recovery protocol.
+    # OwnerReceiptRef is opaque observation evidence, not an owned resource or authority token.
     # The control record does not own an agent, workflow run, Connection, grant or business data.
     lifecycle:
       initial: Recorded
-      states: [Recorded]
-      terminal: [Recorded]
+      states: [Recorded, Registering, Ready, RegistrationFailed]
+      terminal: [Ready]
+      transitions:
+        - name: begin-registration
+          from: [Recorded, RegistrationFailed]
+          to: Registering
+        - name: confirm-ready
+          from: [Registering]
+          to: Ready
+        - name: fail-registration
+          from: [Registering]
+          to: RegistrationFailed
+
+# Draft causal vocabulary. ESS validates typed moves, instances, events and refusals.
+# Command audience: authorized Extensions reconciler under current ordinary admission.
+# Confirm/fail observations require authenticated declared-owner or activation-coordinator
+# evidence, never a caller assertion of readiness, receipt validity or replacement authority.
+# It does not assign persisted fields or evaluate cross-record conditions. No field-assignment
+# DSL is supported in the pinned compiler. Runtime obligations are specified in docs/model.md.
+# Authenticate and check current authority before reading replay/state. Exact recorded retries
+# return their stored outcome outside command dispatch, with no new move or event. All other
+# wrong-state requests refuse. UNMAPPED: replay equality, retention and transaction mechanism.
+errors:
+  - name: extensions.control.ReconciliationRefused
+    summary: Current authority, snapshot, release, owner evidence or readiness checks refused.
+    fields:
+      - name: reason
+        type: extensions.control.ReconciliationRefusalReason
+  - name: extensions.control.InstallationStateConflict
+    summary: The installation is not in a source state for this command.
+    fields:
+      - name: state
+        type: extensions.control.Installation.State
+  - name: extensions.control.RegistrationStateConflict
+    summary: The registration is not in a source state for this command.
+    fields:
+      - name: state
+        type: extensions.control.ContributionRegistration.State
+
+commands:
+  - name: extensions.control.BeginActivation
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.ActivationAttempt
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.begin-activation
+        instance: installation_id
+        emits:
+          - extensions.control.ActivationBegun
+        payload:
+          extensions.control.ActivationBegun:
+            installation_id: input.installation_id
+            attempt: input.attempt
+      - name: refused
+        external: >-
+          Authenticated current authority, exact stored snapshot and retry intent, selected-release
+          provenance or authenticated owner observation and required-readiness checks refuse.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.ConfirmActivation
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.ActivationAttempt
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.confirm-active
+        instance: installation_id
+        emits:
+          - extensions.control.InstallationActivated
+        payload:
+          extensions.control.InstallationActivated:
+            installation_id: input.installation_id
+            attempt: input.attempt
+      - name: refused
+        external: >-
+          Authenticated current authority, exact stored snapshot and retry intent, selected-release
+          provenance or authenticated owner observation and required-readiness checks refuse.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.FailActivation
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.ActivationAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.fail-activation
+        instance: installation_id
+        emits:
+          - extensions.control.ActivationFailed
+        payload:
+          extensions.control.ActivationFailed:
+            installation_id: input.installation_id
+            attempt: input.attempt
+            failure: input.failure
+      - name: refused
+        external: >-
+          Authenticated current authority, exact stored snapshot and retry intent, selected-release
+          provenance or authenticated owner observation and required-readiness checks refuse.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.BeginRegistration
+    input:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.RegistrationAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+    outcomes:
+      - name: accepted
+        moves: extensions.control.ContributionRegistration.begin-registration
+        instance: registration_id
+        emits:
+          - extensions.control.RegistrationBegun
+        payload:
+          extensions.control.RegistrationBegun:
+            registration_id: input.registration_id
+            attempt: input.attempt
+            owner_registration_key: input.owner_registration_key
+      - name: refused
+        external: >-
+          Authenticated current authority, exact stored snapshot and retry intent, selected-release
+          provenance or authenticated owner observation and required-readiness checks refuse.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.RegistrationStateConflict
+
+  - name: extensions.control.ConfirmRegistration
+    input:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.RegistrationAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+      - name: receipt
+        type: extensions.control.OwnerReceiptRef
+    outcomes:
+      - name: accepted
+        moves: extensions.control.ContributionRegistration.confirm-ready
+        instance: registration_id
+        emits:
+          - extensions.control.ContributionReady
+        payload:
+          extensions.control.ContributionReady:
+            registration_id: input.registration_id
+            attempt: input.attempt
+            owner_registration_key: input.owner_registration_key
+            receipt: input.receipt
+      - name: refused
+        external: >-
+          Authenticated current authority, exact stored snapshot and retry intent, selected-release
+          provenance or authenticated owner observation and required-readiness checks refuse.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.RegistrationStateConflict
+
+  - name: extensions.control.FailRegistration
+    input:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.RegistrationAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+      - name: failure
+        type: extensions.control.FailureEvidence
+    outcomes:
+      - name: accepted
+        moves: extensions.control.ContributionRegistration.fail-registration
+        instance: registration_id
+        emits:
+          - extensions.control.RegistrationFailed
+        payload:
+          extensions.control.RegistrationFailed:
+            registration_id: input.registration_id
+            attempt: input.attempt
+            owner_registration_key: input.owner_registration_key
+            failure: input.failure
+      - name: refused
+        external: >-
+          Authenticated current authority, exact stored snapshot and retry intent, selected-release
+          provenance or authenticated owner observation and required-readiness checks refuse.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.RegistrationStateConflict
+
+events:
+  - name: extensions.control.ActivationBegun
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.ActivationAttempt
+
+  - name: extensions.control.InstallationActivated
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.ActivationAttempt
+
+  - name: extensions.control.ActivationFailed
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.ActivationAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.RegistrationBegun
+    fields:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.RegistrationAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+
+  - name: extensions.control.ContributionReady
+    fields:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.RegistrationAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+      - name: receipt
+        type: extensions.control.OwnerReceiptRef
+
+  - name: extensions.control.RegistrationFailed
+    fields:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.RegistrationAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+      - name: failure
+        type: extensions.control.FailureEvidence

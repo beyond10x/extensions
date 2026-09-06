@@ -1,7 +1,7 @@
 # Architecture validation scenarios
 
 These are requirements for later designs and implementations. The current gate validates the
-structural model and compiler refusals; it does not execute these scenarios.
+causal draft, projected shapes and compiler refusals; it does not execute these scenarios.
 
 | Scenario | Required observation | Principal owners |
 |---|---|---|
@@ -51,5 +51,42 @@ refusals only; they do not execute the interleavings below.
 | Upgrade configuration | A candidate schema rejects an explicitly configured value and no migration applies. | Keep the current release and configuration pair; no activation switch or extra count. |
 | Unsupported configuration | Schema dialect/reference closure is unsupported, or a document fails the admitted schema. | Visible refusal before that configuration becomes current. |
 
-The later lifecycle must provide causal commands, events and durable evidence for these cases.
+The later runtime must execute the declared activation commands and add the admission/update/removal
+commands and durable evidence required by these cases.
 In particular, ESS `Recorded` and JSON Schema acceptance are insufficient evidence for any row.
+
+
+## Binding and activation acceptance cases
+
+The current gate executes projected examples and compiler mutation controls for the draft in
+[model.md](model.md#binding-and-activation-proposal). The rows below require a runtime, authenticated
+owner adapters and persistence; **none of these runtime cases is executed by this repository**.
+
+| Case | Setup and action | Required observation |
+|---|---|---|
+| Foundation binding | An installation selects an admitted foundation capability with an exact compatibility revision. | Capability and compatibility resolve; the owner still admits each current action. |
+| Named installation target | Phone east selects Phone west's declared calling capability in the same tenant. | Resolve the selected installation after authentication; preserve target identity through routing. |
+| Foreign or self target | A selector names another tenant's installation or itself. | Refused before activation; no tenant/state disclosure and no owner operation. |
+| Missing or incompatible capability | The target is absent, unsupported, or mismatches the selected contract revision. | Visible binding failure; no activation through that unresolved dependency. |
+| Authority revocation | A previously valid binding remains stored while owner policy revokes the action. | Next action refuses under current policy; compatibility and Active state grant no authority. |
+| Exact realm | Run with absent realm, then with an authenticated realm, using two installations. | Preserve absence or exact value; installation selection never overwrites realm or tenant/actor/executor authority. |
+| Two installation isolation | Two named instances share tenant, processes, document keys and operation names. | Separate state/configuration, routes, event visibility, subscriptions, registrations and idempotency results. |
+| Declaration mismatch | Registration names a declaration from a release other than the installation's selected release. | ReleaseMismatch before owner dispatch; original records and progress stay unchanged. |
+| Stale observation | Delayed success/failure names an old generation, attempt, configuration or binding snapshot. | StaleSnapshot; no progress overwrite, readiness credit or lifecycle move. |
+| Wrong owner | An application caller or another runtime submits a plausible readiness receipt. | Ordinary admission refuses it; no owner readiness inferred from input shape. |
+| Required readiness | One Required declaration has no registration, or has failed/not-ready evidence. | ConfirmActivation returns RequiredNotReady; no Active state or activation event. |
+| Optional failure | All Required declarations are Ready; an Optional Agent or UI declaration failed. | Failure remains visible; optional category alone does not block Active. |
+| Durable begin | Begin activation/registration succeeds, then the reconciler crashes before owner dispatch. | Persisted attempt/snapshot and event permit recovery of the same intent without duplicate work. |
+| Lost owner response | Owner creates an agent/subscription/grant, then its response is lost. | Recover by the unchanged owner registration key; do not allocate another resource on timeout. |
+| New generation | A failed activation retries as a new generation after ambiguous owner work. | Same installation/declaration registration key survives; old observations cannot mark the new generation ready. |
+| Previously Ready contribution | Another required contribution failed; retry activation with a changed generation. | Preserve existing owner resources; require current owner re-attestation, and remain blocked if the owner contract cannot supply it. |
+| Owner cannot recover | An owner has no lookup/replay guarantee for an ambiguous result. | Keep recoverable failure/progress visible and block blind retry; do not claim exactly-once resources. |
+| Exact duplicate outcome | Lose a successful command response, then redeliver the exact authenticated intent after its state move. | Durable replay returns the recorded outcome without another event, transition or owner request. |
+| Changed retry intent | Reuse a replay identity or owner key with different declaration/snapshot intent. | RetryConflict; no second resource or silent overwrite. |
+| Fresh wrong-state request | Send a fresh BeginRegistration in Registering or Ready; send ConfirmActivation in Recorded. | Typed state conflict; no effect. Exact replay is distinguished before dispatch. |
+| Failure evidence | Record authenticated owner failure during Registering/Activating. | Typed failure/provenance persists; count remains Held and partial owner resources remain visible. |
+| Numeric annotation limit | Schema accepts zero generation/attempt/revision or negative installation count. | Runtime validation refuses the invalid domain value despite structural acceptance. |
+
+No runtime row selects an owner resource count, physical namespace encoding, atomic storage/replay
+mechanism, retention duration or upgrade protocol. Those owner contracts remain `UNMAPPED:`. SDK
+storage wire and foundation authority are unchanged by this model pass.

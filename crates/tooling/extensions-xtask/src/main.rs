@@ -5,6 +5,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
+mod causal_controls;
 mod schema_controls;
 
 const ESS_REPOSITORY: &str = "https://github.com/beyond10x/ess.git";
@@ -12,7 +13,7 @@ const ESS_REVISION: &str = "6ef4af76b99a8d2cd861a3cc76140c88c1361129";
 const ESS_VERSION: &str = "ess 0.9.2";
 
 #[derive(Parser)]
-#[command(about = "Validate and generate the Extensions structural model")]
+#[command(about = "Validate and generate the Extensions causal model draft")]
 struct Cli {
     #[command(subcommand)]
     command: Task,
@@ -26,6 +27,8 @@ enum Task {
     Generate,
     /// Install the exact public ESS compiler used by the repository.
     InstallTools,
+    /// Validate projected examples and numeric annotation boundaries.
+    CheckSchema,
 }
 
 fn main() -> Result<()> {
@@ -49,6 +52,7 @@ fn main() -> Result<()> {
             println!("contracts regenerated");
         }
         Task::Check => check(root, &ess)?,
+        Task::CheckSchema => schema_controls::check(root)?,
     }
     Ok(())
 }
@@ -167,12 +171,7 @@ fn check(root: &Path, ess: &Path) -> Result<()> {
             .is_some_and(|entities| entities.len() == 5),
         "the structural baseline must contain its five control records"
     );
-    ensure!(
-        ir["commands"]
-            .as_object()
-            .is_some_and(|commands| commands.is_empty()),
-        "this structural baseline does not yet specify runtime commands"
-    );
+    causal_controls::check(&ir)?;
     let scratch = tempfile::tempdir()?;
     let first_schema = scratch.path().join("first");
     let second_schema = scratch.path().join("second");
@@ -197,7 +196,7 @@ fn check(root: &Path, ess: &Path) -> Result<()> {
     );
     refusal_controls(ess, &source, scratch.path())?;
     schema_controls::check(root)?;
-    println!("gate: valid structural model; operational scenarios remain unimplemented");
+    println!("gate: valid causal model draft; operational scenarios remain unimplemented");
     Ok(())
 }
 
@@ -221,12 +220,34 @@ fn refusal_controls(ess: &Path, source: &Path, scratch: &Path) -> Result<()> {
         "name: extensions.control.SecondExtension\n",
         1,
     );
-    let duplicate_owner = format!("{original}\n{duplicate}");
+    let duplicate_owner = original.replacen(
+        &original[start..end],
+        &format!("{}{duplicate}", &original[start..end]),
+        1,
+    );
+    let missing_cause = original.replacen(
+        "moves: extensions.control.Installation.begin-activation",
+        "updates: extensions.control.Installation",
+        1,
+    );
+    let wrong_instance = original.replacen("instance: installation_id", "instance: attempt", 1);
+    let mutating_refusal = original.replacen("wrong_state: true", "wrong_state: true\n        updates: extensions.control.Installation\n        instance: installation_id", 1);
     for (name, model, marker) in [
         ("unknown-target", missing_target, "MissingRelease"),
         ("wrong-carrier-type", wrong_carrier, "type_mismatch"),
         ("duplicate-owner", duplicate_owner, "owner"),
+        ("missing-causation", missing_cause, "missing_causation"),
+        ("wrong-instance-carrier", wrong_instance, "type_mismatch"),
+        (
+            "mutating-refusal",
+            mutating_refusal,
+            "refusal_mutated_state",
+        ),
     ] {
+        ensure!(
+            model != original,
+            "{name}: mutation did not change the model"
+        );
         let fixture = scratch.join(name);
         copy_tree(source, &fixture)?;
         fs::write(fixture.join("domains/extensions.yaml"), model)?;
@@ -247,8 +268,9 @@ fn refusal_controls(ess: &Path, source: &Path, scratch: &Path) -> Result<()> {
             diagnostic.to_lowercase().contains(&marker.to_lowercase()),
             "{name}: unrelated refusal: {diagnostic}"
         );
-        println!("relation refusal: {name}");
+        println!("compiler refusal: {name}");
     }
+    println!("compiler controls: 6 semantic refusals");
     Ok(())
 }
 

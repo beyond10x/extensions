@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.BindingTarget",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
+    "contract_digest": "a08d8b141cb0da7ee644aa3d63835f1873cd760d342fac08a468aab08d543e1a",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.BindingTarget": {
+      "title": "BindingTarget",
+      "x-ess-name": "extensions.control.BindingTarget",
+      "x-ess-kind": "union",
+      "oneOf": [
+        {
+          "title": "foundation",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "foundation"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.FoundationBindingTarget"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "title": "installation",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "installation"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.InstallationBindingTarget"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "x-ess-union-tag": "kind"
+    },
+    "extensions.control.CapabilityRef": {
+      "title": "CapabilityRef",
+      "x-ess-name": "extensions.control.CapabilityRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.FoundationBindingTarget": {
+      "title": "FoundationBindingTarget",
+      "x-ess-name": "extensions.control.FoundationBindingTarget",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "capability": {
+          "$ref": "#/$defs/extensions.control.CapabilityRef"
+        }
+      },
+      "required": [
+        "capability"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.InstallationBindingTarget": {
+      "title": "InstallationBindingTarget",
+      "x-ess-name": "extensions.control.InstallationBindingTarget",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "installation_id": {
+          "$ref": "#/$defs/extensions.control.InstallationId"
+        },
+        "capability": {
+          "$ref": "#/$defs/extensions.control.CapabilityRef"
+        }
+      },
+      "required": [
+        "installation_id",
+        "capability"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.InstallationId": {
+      "title": "InstallationId",
+      "x-ess-name": "extensions.control.InstallationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

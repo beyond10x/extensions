@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.OwnerRegistrationKey",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
+    "contract_digest": "6af0fa9ec0431046fd8da4b0109ba5e92a186f23d8146a38e877c5176ff924d2",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.OwnerRegistrationKey": {
+      "title": "OwnerRegistrationKey",
+      "x-ess-name": "extensions.control.OwnerRegistrationKey",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}
