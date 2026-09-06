@@ -91,7 +91,7 @@ types:
         type: String
     # The selected release supplies the schema. Documents are immutable, installation-owned
     # values; this snapshot and release_id switch together only after compatibility checks.
-    # UNMAPPED: persistence, digest verification and optimistic updates require causal commands.
+    # UNMAPPED: persistence, digest verification, configuration-only updates and atomic assignment.
 
   - name: extensions.control.InstallationOrigin
     kind: union
@@ -269,7 +269,7 @@ types:
 
   - name: extensions.control.FailureCode
     kind: enum
-    variants: [OwnerUnavailable, OwnerRefused, BindingUnavailable, IncompatibleBinding, RequiredContributionFailed, InvalidConfiguration]
+    variants: [OwnerUnavailable, OwnerRefused, BindingUnavailable, IncompatibleBinding, RequiredContributionFailed, InvalidConfiguration, CompatibilityFailed, MigrationFailed, CleanupFailed, DependencyConflict, QuiescencePending, AmbiguousOwnerResult, DestructionFailed]
 
   - name: extensions.control.FailureEvidence
     kind: struct
@@ -308,6 +308,12 @@ types:
         type: extensions.control.ActivationAttempt
       - name: attempt
         type: extensions.control.RetryAttempt
+      - name: upgrade
+        type: Optional<extensions.control.UpgradeAttempt>
+    # Omitted for selected-release work. At new dispatch, activation.snapshot equals the current
+    # authorized upgrade candidate, with matching generation and intent. It grants no selection.
+    # An exact still-pending stored attempt retains its context after upgrade failure or during removal;
+    # authenticated observation-only recovery may settle it without new dispatch/readiness credit.
 
   - name: extensions.control.RegistrationReady
     kind: struct
@@ -335,7 +341,242 @@ types:
 
   - name: extensions.control.ReconciliationRefusalReason
     kind: enum
-    variants: [Unauthorized, StaleSnapshot, ReleaseMismatch, RequiredNotReady, OwnerNotReady, IncompatibleBinding, RetryConflict, InvalidEvidence]
+    variants: [Unauthorized, StaleSnapshot, ReleaseMismatch, RequiredNotReady, OwnerNotReady, IncompatibleBinding, RetryConflict, InvalidEvidence, VersionLocked, ConfigurationLocked, RemovalLocked, DependencyConflict, QuiescenceRequired, CleanupIncomplete, DestructionNotAuthorized, RetentionConflict]
+
+  # Upgrade and retirement values belong to existing control records. OperationId is stable
+  # across retries; receipts are evidence selectors, not caller authority or new resource edges.
+  # UNMAPPED: exact request equality, owner authentication, replay and atomic field assignments.
+
+  - name: extensions.control.OperationId
+    kind: newtype
+    of: String
+
+  - name: extensions.control.ControlReceiptRef
+    kind: newtype
+    of: String
+
+  - name: extensions.control.DataScopeRef
+    kind: newtype
+    of: String
+
+  - name: extensions.control.UpgradeIntent
+    kind: struct
+    fields:
+      - name: operation_id
+        type: extensions.control.OperationId
+      - name: current
+        type: extensions.control.ActivationSnapshot
+      - name: candidate
+        type: extensions.control.ActivationSnapshot
+
+  - name: extensions.control.UpgradeAttempt
+    kind: struct
+    fields:
+      - name: intent
+        type: extensions.control.UpgradeIntent
+      - name: generation
+        type: extensions.control.ReconciliationGeneration
+      - name: attempt
+        type: extensions.control.RetryAttempt
+
+  - name: extensions.control.AdmittedConfigurationMigration
+    kind: struct
+    fields:
+      - name: contract
+        type: extensions.control.ArtifactReference
+      - name: authorization
+        type: extensions.control.ControlReceiptRef
+      - name: receipt
+        type: extensions.control.ControlReceiptRef
+
+  - name: extensions.control.ConfigurationUpgradeOutcome
+    kind: union
+    tag: kind
+    variants:
+      preserved: extensions.control.ControlReceiptRef
+      migrated: extensions.control.AdmittedConfigurationMigration
+
+  - name: extensions.control.UpgradeVerification
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.UpgradeAttempt
+      - name: compatibility
+        type: extensions.control.ControlReceiptRef
+      - name: configuration
+        type: extensions.control.ConfigurationUpgradeOutcome
+      - name: required_readiness
+        type: extensions.control.ControlReceiptRef
+
+  - name: extensions.control.UpgradeFailure
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.UpgradeAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.UpgradeProgress
+    kind: union
+    tag: kind
+    variants:
+      running: extensions.control.UpgradeAttempt
+      selected: extensions.control.UpgradeVerification
+      failed: extensions.control.UpgradeFailure
+
+  # The inventory counts control registrations only. It never claims an owner-resource count.
+  # Include selected, current candidate and unresolved prior candidate registrations.
+
+  - name: extensions.control.RegistrationCleanupTarget
+    kind: struct
+    fields:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+      - name: registration
+        type: extensions.control.RegistrationAttempt
+
+  - name: extensions.control.RetentionPolicy
+    kind: enum
+    variants: [Retain]
+
+  - name: extensions.control.RemovalIntent
+    kind: struct
+    fields:
+      - name: operation_id
+        type: extensions.control.OperationId
+      - name: selected
+        type: extensions.control.ActivationSnapshot
+      - name: retention
+        type: extensions.control.RetentionPolicy
+      - name: registrations
+        type: List<extensions.control.RegistrationCleanupTarget>
+
+  - name: extensions.control.RemovalAttempt
+    kind: struct
+    fields:
+      - name: intent
+        type: extensions.control.RemovalIntent
+      - name: attempt
+        type: extensions.control.RetryAttempt
+
+  - name: extensions.control.DetachmentAttempt
+    kind: struct
+    fields:
+      - name: removal
+        type: extensions.control.RemovalAttempt
+      - name: target
+        type: extensions.control.RegistrationCleanupTarget
+      - name: attempt
+        type: extensions.control.RetryAttempt
+
+  - name: extensions.control.ControlDetachmentResult
+    kind: union
+    tag: kind
+    variants:
+      owner_confirmed: extensions.control.OwnerReceiptRef
+      never_dispatched: extensions.control.ControlReceiptRef
+
+  - name: extensions.control.DetachmentConfirmation
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.DetachmentAttempt
+      - name: result
+        type: extensions.control.ControlDetachmentResult
+
+  - name: extensions.control.DetachmentFailure
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.DetachmentAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.DetachmentProgress
+    kind: union
+    tag: kind
+    variants:
+      running: extensions.control.DetachmentAttempt
+      detached: extensions.control.DetachmentConfirmation
+      failed: extensions.control.DetachmentFailure
+
+  - name: extensions.control.RemovalConfirmation
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.RemovalAttempt
+      - name: detachments
+        type: List<extensions.control.DetachmentConfirmation>
+      - name: quiescence
+        type: extensions.control.ControlReceiptRef
+      - name: dependencies
+        type: extensions.control.ControlReceiptRef
+
+  - name: extensions.control.RemovalFailure
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.RemovalAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.RemovalProgress
+    kind: union
+    tag: kind
+    variants:
+      running: extensions.control.RemovalAttempt
+      removed: extensions.control.RemovalConfirmation
+      failed: extensions.control.RemovalFailure
+
+  # Separate post-removal destruction intent. Its scope is an opaque exact authorized data
+  # selection, never blanket authority over shared/owner resources. Tombstones remain retained.
+  # UNMAPPED: data ownership, physical deletion, backup guarantees and retention duration.
+
+  - name: extensions.control.DataDestructionIntent
+    kind: struct
+    fields:
+      - name: operation_id
+        type: extensions.control.OperationId
+      - name: removal_operation_id
+        type: extensions.control.OperationId
+      - name: scope
+        type: extensions.control.DataScopeRef
+      - name: authorization
+        type: extensions.control.ControlReceiptRef
+
+  - name: extensions.control.DataDestructionAttempt
+    kind: struct
+    fields:
+      - name: intent
+        type: extensions.control.DataDestructionIntent
+      - name: attempt
+        type: extensions.control.RetryAttempt
+
+  - name: extensions.control.DataDestructionConfirmation
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.DataDestructionAttempt
+      - name: owner_receipt
+        type: extensions.control.OwnerReceiptRef
+
+  - name: extensions.control.DataDestructionFailure
+    kind: struct
+    fields:
+      - name: attempt
+        type: extensions.control.DataDestructionAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.DataDestructionProgress
+    kind: union
+    tag: kind
+    variants:
+      running: extensions.control.DataDestructionAttempt
+      destroyed: extensions.control.DataDestructionConfirmation
+      failed: extensions.control.DataDestructionFailure
 
 entities:
   - name: extensions.control.Extension
@@ -430,6 +671,12 @@ entities:
         type: extensions.control.BindingSnapshot
       - name: activation
         type: Optional<extensions.control.ActivationProgress>
+      - name: upgrade
+        type: Optional<extensions.control.UpgradeProgress>
+      - name: removal
+        type: Optional<extensions.control.RemovalProgress>
+      - name: data_destruction
+        type: Optional<extensions.control.DataDestructionProgress>
     relations:
       - name: release
         kind: references
@@ -446,13 +693,13 @@ entities:
     # UNMAPPED: deployment identity is supplied by trusted bootstrap; its public owner reference
     # contract is not declared here. There is no locally owned Deployment entity.
     # UNMAPPED: tenant-scoped name uniqueness, authenticated retry-key encoding,
-    # atomic multi-scope count reservations and retained-data transitions require runtime contracts.
+    # atomic multi-scope count reservations and retained-data persistence require runtime contracts.
     # Bindings have no tenant/actor/realm/executor input: selectors resolve after authentication.
     # Snapshot equality, generation freshness and field assignment are runtime obligations.
     lifecycle:
       initial: Recorded
-      states: [Recorded, Activating, Active, ActivationFailed]
-      terminal: [Active]
+      states: [Recorded, Activating, Active, ActivationFailed, Upgrading, UpgradeFailed, Removing, RemovalFailed, RemovedRetained, Destroying, DestructionFailed, DataScopeDestroyed]
+      terminal: [DataScopeDestroyed]
       transitions:
         - name: begin-activation
           from: [Recorded, ActivationFailed]
@@ -463,6 +710,33 @@ entities:
         - name: fail-activation
           from: [Activating]
           to: ActivationFailed
+        - name: begin-upgrade
+          from: [Active, UpgradeFailed]
+          to: Upgrading
+        - name: confirm-upgrade
+          from: [Upgrading]
+          to: Active
+        - name: fail-upgrade
+          from: [Upgrading]
+          to: UpgradeFailed
+        - name: begin-removal
+          from: [ActivationFailed, Active, Recorded, RemovalFailed, UpgradeFailed]
+          to: Removing
+        - name: confirm-removal
+          from: [Removing]
+          to: RemovedRetained
+        - name: fail-removal
+          from: [Removing]
+          to: RemovalFailed
+        - name: begin-data-destruction
+          from: [DestructionFailed, RemovedRetained]
+          to: Destroying
+        - name: confirm-data-destruction
+          from: [Destroying]
+          to: DataScopeDestroyed
+        - name: fail-data-destruction
+          from: [Destroying]
+          to: DestructionFailed
 
   - name: extensions.control.ContributionRegistration
     identity:
@@ -477,22 +751,27 @@ entities:
         type: extensions.control.OwnerRegistrationKey
       - name: progress
         type: Optional<extensions.control.RegistrationProgress>
+      - name: detachment
+        type: Optional<extensions.control.DetachmentProgress>
     relations:
       - name: declaration
         kind: references
         target: extensions.control.ContributionDeclaration
         cardinality: one
         via: contribution_id
-    # Runtime obligations: declaration belongs to the selected immutable release; owner-only
-    # observation matches installation, declaration, stable key and current activation snapshot.
+    # New dispatch requires selected-release or exact current authorized candidate provenance.
+    # Candidate readiness is scoped to its current upgrade and does not make it selected.
+    # Owner observation matches installation, declaration, stable key and the exact stored pending
+    # attempt. Observation-only recovery may settle that attempt after upgrade failure or during
+    # removal; it cannot reopen reach, credit another intent or overwrite superseding evidence.
     # Never derive the stable key from generation/attempt, even after an ambiguous owner response.
     # UNMAPPED: owner resource-reference cardinality, key encoding and atomic recovery protocol.
     # OwnerReceiptRef is opaque observation evidence, not an owned resource or authority token.
     # The control record does not own an agent, workflow run, Connection, grant or business data.
     lifecycle:
       initial: Recorded
-      states: [Recorded, Registering, Ready, RegistrationFailed]
-      terminal: [Ready]
+      states: [Recorded, Registering, Ready, RegistrationFailed, Detaching, DetachmentFailed, Detached]
+      terminal: [Detached]
       transitions:
         - name: begin-registration
           from: [Recorded, RegistrationFailed]
@@ -503,6 +782,15 @@ entities:
         - name: fail-registration
           from: [Registering]
           to: RegistrationFailed
+        - name: begin-detachment
+          from: [DetachmentFailed, Ready, Recorded, RegistrationFailed]
+          to: Detaching
+        - name: confirm-detachment
+          from: [Detaching]
+          to: Detached
+        - name: fail-detachment
+          from: [Detaching]
+          to: DetachmentFailed
 
 # Draft causal vocabulary. ESS validates typed moves, instances, events and refusals.
 # Command audience: authorized Extensions reconciler under current ordinary admission.
@@ -549,8 +837,8 @@ commands:
             attempt: input.attempt
       - name: refused
         external: >-
-          Authenticated current authority, exact stored snapshot and retry intent, selected-release
-          provenance or authenticated owner observation and required-readiness checks refuse.
+          Current authenticated activation authority, policy, exact selected-release snapshot,
+          installation intent or retry admission refuse before activation work is scheduled.
         error: extensions.control.ReconciliationRefused
       - name: wrong-state
         wrong_state: true
@@ -574,8 +862,8 @@ commands:
             attempt: input.attempt
       - name: refused
         external: >-
-          Authenticated current authority, exact stored snapshot and retry intent, selected-release
-          provenance or authenticated owner observation and required-readiness checks refuse.
+          Current authenticated activation authority, exact selected-release attempt and snapshot,
+          compatibility or complete authenticated Required selected-release readiness evidence refuse.
         error: extensions.control.ReconciliationRefused
       - name: wrong-state
         wrong_state: true
@@ -602,8 +890,8 @@ commands:
             failure: input.failure
       - name: refused
         external: >-
-          Authenticated current authority, exact stored snapshot and retry intent, selected-release
-          provenance or authenticated owner observation and required-readiness checks refuse.
+          Current authenticated activation authority, exact selected-release attempt and snapshot,
+          or authenticated activation failure evidence refuse; readiness is not required to record failure.
         error: extensions.control.ReconciliationRefused
       - name: wrong-state
         wrong_state: true
@@ -630,8 +918,10 @@ commands:
             owner_registration_key: input.owner_registration_key
       - name: refused
         external: >-
-          Authenticated current authority, exact stored snapshot and retry intent, selected-release
-          provenance or authenticated owner observation and required-readiness checks refuse.
+          Current authenticated registration authority, exact selected-release or current authorized
+          upgrade-candidate context, declaration, stable key or retry admission refuse before owner dispatch.
+          Removal having begun or candidate dispatch authorization no longer applying also refuses;
+          historical pending-attempt recovery is observation-only, never permission for new dispatch.
         error: extensions.control.ReconciliationRefused
       - name: wrong-state
         wrong_state: true
@@ -661,8 +951,12 @@ commands:
             receipt: input.receipt
       - name: refused
         external: >-
-          Authenticated current authority, exact stored snapshot and retry intent, selected-release
-          provenance or authenticated owner observation and required-readiness checks refuse.
+          Current authenticated control/declared-owner observation authority, exact stored unresolved
+          registration identity, declaration, owner key and attempt, or positive owner evidence refuse.
+          Besides current selected/candidate observations, observation-only recovery may settle the exact
+          still-pending attempt after upgrade failure or during removal. Superseded or merely supplied
+          historical evidence refuses; recovery grants no new dispatch, control reach or readiness credit
+          to a different intent and cannot change selection or release capacity.
         error: extensions.control.ReconciliationRefused
       - name: wrong-state
         wrong_state: true
@@ -692,12 +986,349 @@ commands:
             failure: input.failure
       - name: refused
         external: >-
-          Authenticated current authority, exact stored snapshot and retry intent, selected-release
-          provenance or authenticated owner observation and required-readiness checks refuse.
+          Current authenticated control/declared-owner observation authority, exact stored unresolved
+          registration identity, declaration, owner key and attempt, or owner failure evidence refuse.
+          Besides current selected/candidate observations, observation-only recovery may settle the exact
+          still-pending attempt after upgrade failure or during removal. Superseded or merely supplied
+          historical evidence refuses; recovery grants no new dispatch or control reach and cannot change
+          selection or release capacity. Successful readiness is not required to record failure.
         error: extensions.control.ReconciliationRefused
       - name: wrong-state
         wrong_state: true
         error: extensions.control.RegistrationStateConflict
+
+  - name: extensions.control.BeginUpgrade
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.UpgradeAttempt
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.begin-upgrade
+        instance: installation_id
+        emits:
+          - extensions.control.UpgradeBegun
+        payload:
+          extensions.control.UpgradeBegun:
+            installation_id: input.installation_id
+            attempt: input.attempt
+      - name: refused
+        external: >-
+          Current authenticated upgrade authority, independent version/configuration locks, exact current
+          and candidate intent, dependency/policy admission or unresolved earlier owner effects refuse before staging.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.ConfirmUpgrade
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.UpgradeAttempt
+      - name: verification
+        type: extensions.control.UpgradeVerification
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.confirm-upgrade
+        instance: installation_id
+        emits:
+          - extensions.control.InstallationUpgraded
+        payload:
+          extensions.control.InstallationUpgraded:
+            installation_id: input.installation_id
+            attempt: input.attempt
+            verification: input.verification
+      - name: refused
+        external: >-
+          Current authenticated upgrade authority, independent locks, exact current/candidate attempt,
+          candidate compatibility, admitted migration or preserved values, required readiness or dependencies refuse.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.FailUpgrade
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.UpgradeAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.fail-upgrade
+        instance: installation_id
+        emits:
+          - extensions.control.UpgradeFailed
+        payload:
+          extensions.control.UpgradeFailed:
+            installation_id: input.installation_id
+            attempt: input.attempt
+            failure: input.failure
+      - name: refused
+        external: >-
+          Current authenticated upgrade-observer authority, exact current/candidate attempt or failure
+          evidence refuse; compatibility, successful migration and candidate readiness are not prerequisites.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.BeginRemoval
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.RemovalAttempt
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.begin-removal
+        instance: installation_id
+        emits:
+          - extensions.control.RemovalBegun
+        payload:
+          extensions.control.RemovalBegun:
+            installation_id: input.installation_id
+            attempt: input.attempt
+      - name: refused
+        external: >-
+          Current authenticated removal authority or lock, exact selected snapshot and complete control
+          inventory, dependency admission or stable retry intent refuse before cleanup is dispatched.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.ConfirmRemoval
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.RemovalAttempt
+      - name: confirmation
+        type: extensions.control.RemovalConfirmation
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.confirm-removal
+        instance: installation_id
+        emits:
+          - extensions.control.InstallationRemoved
+        payload:
+          extensions.control.InstallationRemoved:
+            installation_id: input.installation_id
+            attempt: input.attempt
+            confirmation: input.confirmation
+      - name: refused
+        external: >-
+          Current authenticated removal authority or lock, exact inventory/selection and attempt,
+          dependencies, quiescence or complete authenticated control detachment evidence refuse.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.FailRemoval
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.RemovalAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.fail-removal
+        instance: installation_id
+        emits:
+          - extensions.control.RemovalFailed
+        payload:
+          extensions.control.RemovalFailed:
+            installation_id: input.installation_id
+            attempt: input.attempt
+            failure: input.failure
+      - name: refused
+        external: >-
+          Current authenticated cleanup-observer authority, exact removal intent/attempt or cleanup
+          failure evidence refuse; successful detachment and quiescence are not prerequisites.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.BeginDetachment
+    input:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.DetachmentAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+    outcomes:
+      - name: accepted
+        moves: extensions.control.ContributionRegistration.begin-detachment
+        instance: registration_id
+        emits:
+          - extensions.control.DetachmentBegun
+        payload:
+          extensions.control.DetachmentBegun:
+            registration_id: input.registration_id
+            attempt: input.attempt
+            owner_registration_key: input.owner_registration_key
+      - name: refused
+        external: >-
+          Current authenticated detachment authority, owning installation Removing intent, exact
+          inventory target/stable key or unresolved in-flight registration work refuse before detachment dispatch.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.RegistrationStateConflict
+
+  - name: extensions.control.ConfirmDetachment
+    input:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.DetachmentAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+      - name: result
+        type: extensions.control.ControlDetachmentResult
+    outcomes:
+      - name: accepted
+        moves: extensions.control.ContributionRegistration.confirm-detachment
+        instance: registration_id
+        emits:
+          - extensions.control.RegistrationDetached
+        payload:
+          extensions.control.RegistrationDetached:
+            registration_id: input.registration_id
+            attempt: input.attempt
+            owner_registration_key: input.owner_registration_key
+            result: input.result
+      - name: refused
+        external: >-
+          Current authenticated control or declared-owner authority, exact removal target/attempt and
+          stable key, or positive detachment/no-dispatch evidence refuse; owner data deletion is not required.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.RegistrationStateConflict
+
+  - name: extensions.control.FailDetachment
+    input:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.DetachmentAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+      - name: failure
+        type: extensions.control.FailureEvidence
+    outcomes:
+      - name: accepted
+        moves: extensions.control.ContributionRegistration.fail-detachment
+        instance: registration_id
+        emits:
+          - extensions.control.DetachmentFailed
+        payload:
+          extensions.control.DetachmentFailed:
+            registration_id: input.registration_id
+            attempt: input.attempt
+            owner_registration_key: input.owner_registration_key
+            failure: input.failure
+      - name: refused
+        external: >-
+          Current authenticated control or declared-owner failure-observer authority, exact removal
+          target/attempt and stable key or failure evidence refuse; successful detachment is not required.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.RegistrationStateConflict
+
+  - name: extensions.control.BeginDataDestruction
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.DataDestructionAttempt
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.begin-data-destruction
+        instance: installation_id
+        emits:
+          - extensions.control.DataDestructionBegun
+        payload:
+          extensions.control.DataDestructionBegun:
+            installation_id: input.installation_id
+            attempt: input.attempt
+      - name: refused
+        external: >-
+          Current separate destruction authorization, confirmed removal, exact admitted data scope
+          or stable retry intent refuse before owner dispatch; retention policy alone grants no authority.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.ConfirmDataDestruction
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.DataDestructionAttempt
+      - name: confirmation
+        type: extensions.control.DataDestructionConfirmation
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.confirm-data-destruction
+        instance: installation_id
+        emits:
+          - extensions.control.DataScopeDestroyed
+        payload:
+          extensions.control.DataScopeDestroyed:
+            installation_id: input.installation_id
+            attempt: input.attempt
+            confirmation: input.confirmation
+      - name: refused
+        external: >-
+          Current separate destruction authorization, confirmed removal, exact data scope/attempt
+          or authenticated owner confirmation refuse; acknowledgment concerns only that authorized scope.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
+
+  - name: extensions.control.FailDataDestruction
+    input:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.DataDestructionAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+    outcomes:
+      - name: accepted
+        moves: extensions.control.Installation.fail-data-destruction
+        instance: installation_id
+        emits:
+          - extensions.control.DataDestructionFailed
+        payload:
+          extensions.control.DataDestructionFailed:
+            installation_id: input.installation_id
+            attempt: input.attempt
+            failure: input.failure
+      - name: refused
+        external: >-
+          Current separate destruction authorization, exact post-removal data scope/attempt or
+          authenticated failure evidence refuse; successful physical deletion is not a prerequisite.
+        error: extensions.control.ReconciliationRefused
+      - name: wrong-state
+        wrong_state: true
+        error: extensions.control.InstallationStateConflict
 
 events:
   - name: extensions.control.ActivationBegun
@@ -751,5 +1382,111 @@ events:
         type: extensions.control.RegistrationAttempt
       - name: owner_registration_key
         type: extensions.control.OwnerRegistrationKey
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.UpgradeBegun
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.UpgradeAttempt
+
+  - name: extensions.control.InstallationUpgraded
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.UpgradeAttempt
+      - name: verification
+        type: extensions.control.UpgradeVerification
+
+  - name: extensions.control.UpgradeFailed
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.UpgradeAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.RemovalBegun
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.RemovalAttempt
+
+  - name: extensions.control.InstallationRemoved
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.RemovalAttempt
+      - name: confirmation
+        type: extensions.control.RemovalConfirmation
+
+  - name: extensions.control.RemovalFailed
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.RemovalAttempt
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.DetachmentBegun
+    fields:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.DetachmentAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+
+  - name: extensions.control.RegistrationDetached
+    fields:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.DetachmentAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+      - name: result
+        type: extensions.control.ControlDetachmentResult
+
+  - name: extensions.control.DetachmentFailed
+    fields:
+      - name: registration_id
+        type: extensions.control.RegistrationId
+      - name: attempt
+        type: extensions.control.DetachmentAttempt
+      - name: owner_registration_key
+        type: extensions.control.OwnerRegistrationKey
+      - name: failure
+        type: extensions.control.FailureEvidence
+
+  - name: extensions.control.DataDestructionBegun
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.DataDestructionAttempt
+
+  - name: extensions.control.DataScopeDestroyed
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.DataDestructionAttempt
+      - name: confirmation
+        type: extensions.control.DataDestructionConfirmation
+
+  - name: extensions.control.DataDestructionFailed
+    fields:
+      - name: installation_id
+        type: extensions.control.InstallationId
+      - name: attempt
+        type: extensions.control.DataDestructionAttempt
       - name: failure
         type: extensions.control.FailureEvidence

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.DataScopeRef",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "9ecac55c1efc9a188a39c9af2634eec2e702d88e445a6aa6774e800e4a4ea28d",
+    "contract_digest": "775bb3db03b2fba306deedc2701ca27ca4f0810f1c2222d0e1545376a14d8e30",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.DataScopeRef": {
+      "title": "DataScopeRef",
+      "x-ess-name": "extensions.control.DataScopeRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

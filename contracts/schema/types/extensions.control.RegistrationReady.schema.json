@@ -4,8 +4,8 @@
   "x-ess-provenance": {
     "system": "extensions",
     "specification_version": "v1",
-    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
-    "contract_digest": "784e40ee721c6e1be6473374576fd1dc0a0d4d37989478b26181c928447db779",
+    "source_digest": "9ecac55c1efc9a188a39c9af2634eec2e702d88e445a6aa6774e800e4a4ea28d",
+    "contract_digest": "bf64189f11503c3a28efa46d35d016fd17f1cd311b4fe67d790f6e263c591aa6",
     "regenerate": "ess generate"
   },
   "$defs": {
@@ -293,6 +293,12 @@
       "x-ess-kind": "newtype",
       "type": "string"
     },
+    "extensions.control.OperationId": {
+      "title": "OperationId",
+      "x-ess-name": "extensions.control.OperationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
     "extensions.control.OwnerReceiptRef": {
       "title": "OwnerReceiptRef",
       "x-ess-name": "extensions.control.OwnerReceiptRef",
@@ -325,6 +331,9 @@
         },
         "attempt": {
           "$ref": "#/$defs/extensions.control.RetryAttempt"
+        },
+        "upgrade": {
+          "$ref": "#/$defs/extensions.control.UpgradeAttempt"
         }
       },
       "required": [
@@ -368,6 +377,52 @@
       "x-ess-invariants": [
         "value > 0"
       ]
+    },
+    "extensions.control.UpgradeAttempt": {
+      "title": "UpgradeAttempt",
+      "x-ess-name": "extensions.control.UpgradeAttempt",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/extensions.control.UpgradeIntent"
+        },
+        "generation": {
+          "$ref": "#/$defs/extensions.control.ReconciliationGeneration"
+        },
+        "attempt": {
+          "$ref": "#/$defs/extensions.control.RetryAttempt"
+        }
+      },
+      "required": [
+        "intent",
+        "generation",
+        "attempt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.UpgradeIntent": {
+      "title": "UpgradeIntent",
+      "x-ess-name": "extensions.control.UpgradeIntent",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/extensions.control.OperationId"
+        },
+        "current": {
+          "$ref": "#/$defs/extensions.control.ActivationSnapshot"
+        },
+        "candidate": {
+          "$ref": "#/$defs/extensions.control.ActivationSnapshot"
+        }
+      },
+      "required": [
+        "operation_id",
+        "current",
+        "candidate"
+      ],
+      "additionalProperties": false
     }
   }
 }
