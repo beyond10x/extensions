@@ -5,7 +5,7 @@ kind: executable-system-specification
 status: draft
 title: Extension control domain model
 summary: Public structural ESS model for extension releases, tenant installations and contribution registration.
-revision: 6
+revision: 7
 ---
 # Extension control domain model
 
@@ -79,3 +79,17 @@ The operational model remains draft: structural checks cannot establish authenti
 admission, snapshot equality, required readiness, durable replay, atomic event/field persistence
 or physical installation isolation. Those requirements and unresolved owner contracts remain
 explicit in docs/model.md and docs/scenarios.md.
+
+## Adversarial result and integrated contract
+
+The independent pass found no defect in the bounded model. Its 58 added fixture cases cover
+error states/reasons, nested authority fields and required provenance; all 145 previous examples
+remain unchanged and selected. The complete gate now executes 220 controls: 75 accepted,
+128 refused, five annotation-gap controls, six causal-command checks and six compiler refusals.
+The reviewer separately exercised the actual causal checker with 36 altered IR documents;
+all were refused. These probes remain distinct from the gate's case count.
+
+The reviewed source is being integrated together with those retained regression cases. The
+compiler still generates 77 deterministic schemas. No runtime scenario or running installation
+service is claimed; owner admission, exact snapshot/state consistency, durable retry recovery and
+physical storage isolation remain the explicit implementation obligations.
