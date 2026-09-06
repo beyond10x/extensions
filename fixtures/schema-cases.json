@@ -1,0 +1,501 @@
+[
+  {
+    "schema": "types/extensions.control.ConfigurationContract.schema.json",
+    "valid": [
+      {
+        "dialect": "JsonSchema202012",
+        "schema": {
+          "location": "https://example.invalid/releases/phone/config.schema.json",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      }
+    ],
+    "invalid": [
+      {
+        "dialect": "Unknown",
+        "schema": {
+          "location": "https://example.invalid/releases/phone/config.schema.json",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      {
+        "dialect": "JsonSchema202012"
+      },
+      {
+        "dialect": "JsonSchema202012",
+        "schema": "untyped-schema"
+      }
+    ]
+  },
+  {
+    "schema": "types/extensions.control.ConfigurationSnapshot.schema.json",
+    "valid": [
+      {
+        "revision": 1,
+        "document_key": "config/rev-1",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ],
+    "invalid": [
+      {
+        "revision": "1",
+        "document_key": "config/rev-1",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      {
+        "revision": 1,
+        "document_key": {
+          "url": "https://example.invalid"
+        },
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      {
+        "revision": 1,
+        "document_key": "config/rev-1"
+      }
+    ]
+  },
+  {
+    "schema": "types/extensions.control.InstallationOrigin.schema.json",
+    "valid": [
+      {
+        "kind": "requested",
+        "value": "request-1"
+      },
+      {
+        "kind": "preinstalled",
+        "value": "east-phone"
+      }
+    ],
+    "invalid": [
+      {
+        "kind": "preinstalled"
+      },
+      {
+        "kind": "uploaded",
+        "value": "x"
+      },
+      {
+        "kind": "requested",
+        "value": "r1",
+        "preinstalled": "p1"
+      }
+    ]
+  },
+  {
+    "schema": "types/extensions.control.InstallationLocks.schema.json",
+    "valid": [
+      {
+        "version_updates": true,
+        "enable_disable": true,
+        "removal": true,
+        "configuration": true
+      },
+      {
+        "version_updates": true,
+        "enable_disable": false,
+        "removal": false,
+        "configuration": false
+      }
+    ],
+    "invalid": [
+      {
+        "version_updates": true,
+        "removal": true,
+        "configuration": true
+      },
+      {
+        "version_updates": true,
+        "enable_disable": true,
+        "removal": "true",
+        "configuration": true
+      },
+      {
+        "version_updates": true,
+        "enable_disable": true,
+        "removal": true,
+        "configuration": true,
+        "frozen": true
+      }
+    ]
+  },
+  {
+    "schema": "types/extensions.control.InstallationPolicy.schema.json",
+    "valid": [
+      {
+        "locks": {
+          "version_updates": true,
+          "enable_disable": true,
+          "removal": true,
+          "configuration": true
+        },
+        "editable_settings": [
+          "/display_name"
+        ],
+        "count_limits": [
+          {
+            "scope": "Tenant",
+            "maximum": 2
+          },
+          {
+            "scope": "Deployment",
+            "maximum": 10
+          }
+        ]
+      },
+      {
+        "locks": {
+          "version_updates": false,
+          "enable_disable": false,
+          "removal": false,
+          "configuration": false
+        },
+        "editable_settings": [],
+        "count_limits": []
+      }
+    ],
+    "invalid": [
+      {
+        "locks": {
+          "version_updates": true,
+          "enable_disable": true,
+          "removal": true,
+          "configuration": true
+        },
+        "editable_settings": {
+          "/display_name": true
+        },
+        "count_limits": [
+          {
+            "scope": "Tenant",
+            "maximum": 2
+          },
+          {
+            "scope": "Deployment",
+            "maximum": 10
+          }
+        ]
+      },
+      {
+        "locks": {
+          "version_updates": true,
+          "enable_disable": true,
+          "removal": true,
+          "configuration": true
+        },
+        "editable_settings": [
+          "/display_name"
+        ],
+        "count_limits": [
+          {
+            "scope": "Realm",
+            "maximum": 1
+          }
+        ]
+      },
+      {
+        "locks": {
+          "version_updates": true,
+          "enable_disable": true,
+          "removal": true,
+          "configuration": true
+        },
+        "editable_settings": [
+          "/display_name"
+        ],
+        "count_limits": [
+          {
+            "scope": "Tenant",
+            "maximum": 1.5
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "schema": "types/extensions.control.InstallationLimit.schema.json",
+    "valid": [
+      {
+        "scope": "Tenant",
+        "maximum": 0
+      },
+      {
+        "scope": "Deployment",
+        "maximum": 10
+      }
+    ],
+    "invalid": [
+      {
+        "scope": "Tenant"
+      },
+      {
+        "scope": "Tenant",
+        "maximum": "2"
+      },
+      {
+        "scope": "Actor",
+        "maximum": 1
+      }
+    ]
+  },
+  {
+    "schema": "types/extensions.control.CountMembership.schema.json",
+    "valid": [
+      "Held",
+      "Released"
+    ],
+    "invalid": [
+      "Pending",
+      "Failed",
+      "Disabled",
+      "Removing"
+    ]
+  },
+  {
+    "schema": "entities/extensions.control.Installation.schema.json",
+    "valid": [
+      {
+        "installation_id": "phone-east",
+        "state": "Recorded",
+        "tenant_id": "tenant-a",
+        "name": "East phone",
+        "release_id": "phone-r1",
+        "deployment_id": "region-a",
+        "origin": {
+          "kind": "preinstalled",
+          "value": "east-phone"
+        },
+        "configuration": {
+          "revision": 1,
+          "document_key": "config/rev-1",
+          "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "policy_snapshot": {
+          "revision": "policy-r1",
+          "rules": {
+            "locks": {
+              "version_updates": true,
+              "enable_disable": true,
+              "removal": true,
+              "configuration": true
+            },
+            "editable_settings": [
+              "/display_name"
+            ],
+            "count_limits": [
+              {
+                "scope": "Tenant",
+                "maximum": 2
+              },
+              {
+                "scope": "Deployment",
+                "maximum": 10
+              }
+            ]
+          }
+        },
+        "count_membership": "Held"
+      },
+      {
+        "installation_id": "phone-west",
+        "state": "Recorded",
+        "tenant_id": "tenant-a",
+        "name": "West phone",
+        "release_id": "phone-r1",
+        "deployment_id": "region-a",
+        "origin": {
+          "kind": "requested",
+          "value": "request-2"
+        },
+        "configuration": {
+          "revision": 1,
+          "document_key": "config/rev-1",
+          "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "policy_snapshot": {
+          "revision": "policy-r1",
+          "rules": {
+            "locks": {
+              "version_updates": true,
+              "enable_disable": true,
+              "removal": true,
+              "configuration": true
+            },
+            "editable_settings": [
+              "/display_name"
+            ],
+            "count_limits": [
+              {
+                "scope": "Tenant",
+                "maximum": 2
+              },
+              {
+                "scope": "Deployment",
+                "maximum": 10
+              }
+            ]
+          }
+        },
+        "count_membership": "Held"
+      }
+    ],
+    "invalid": [
+      {
+        "installation_id": "phone-east",
+        "state": "Recorded",
+        "tenant_id": "tenant-a",
+        "name": "East phone",
+        "release_id": "phone-r1",
+        "deployment_id": "region-a",
+        "origin": {
+          "kind": "preinstalled",
+          "value": "east-phone"
+        },
+        "configuration": {
+          "revision": 1,
+          "document_key": "config/rev-1",
+          "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "policy_snapshot": null,
+        "count_membership": "Held"
+      },
+      {
+        "installation_id": "phone-east",
+        "state": "Recorded",
+        "tenant_id": "tenant-a",
+        "name": "East phone",
+        "release_id": "phone-r1",
+        "deployment_id": "region-a",
+        "origin": {
+          "kind": "preinstalled",
+          "value": "east-phone"
+        },
+        "configuration": {
+          "revision": 1
+        },
+        "policy_snapshot": {
+          "revision": "policy-r1",
+          "rules": {
+            "locks": {
+              "version_updates": true,
+              "enable_disable": true,
+              "removal": true,
+              "configuration": true
+            },
+            "editable_settings": [
+              "/display_name"
+            ],
+            "count_limits": [
+              {
+                "scope": "Tenant",
+                "maximum": 2
+              },
+              {
+                "scope": "Deployment",
+                "maximum": 10
+              }
+            ]
+          }
+        },
+        "count_membership": "Held"
+      },
+      {
+        "installation_id": "phone-east",
+        "state": "Recorded",
+        "tenant_id": "tenant-a",
+        "name": "East phone",
+        "release_id": "phone-r1",
+        "deployment_id": "region-a",
+        "origin": {
+          "kind": "preinstalled",
+          "value": "east-phone"
+        },
+        "configuration": {
+          "revision": 1,
+          "document_key": "config/rev-1",
+          "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "policy_snapshot": {
+          "revision": "policy-r1",
+          "rules": {
+            "locks": {
+              "version_updates": true,
+              "enable_disable": true,
+              "removal": true,
+              "configuration": true
+            },
+            "editable_settings": [
+              "/display_name"
+            ],
+            "count_limits": [
+              {
+                "scope": "Tenant",
+                "maximum": 2
+              },
+              {
+                "scope": "Deployment",
+                "maximum": 10
+              }
+            ]
+          }
+        },
+        "count_membership": "Active"
+      }
+    ]
+  },
+  {
+    "schema": "entities/extensions.control.Release.schema.json",
+    "valid": [
+      {
+        "release_id": "phone-r1",
+        "state": "Recorded",
+        "extension_id": "phone",
+        "specification": {
+          "location": "https://example.invalid/releases/phone/config.schema.json",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "artifacts": [],
+        "configuration_contract": {
+          "dialect": "JsonSchema202012",
+          "schema": {
+            "location": "https://example.invalid/releases/phone/config.schema.json",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        },
+        "policy_constraints": {
+          "locks": {
+            "version_updates": true,
+            "enable_disable": true,
+            "removal": true,
+            "configuration": true
+          },
+          "editable_settings": [
+            "/display_name"
+          ],
+          "count_limits": [
+            {
+              "scope": "Tenant",
+              "maximum": 2
+            },
+            {
+              "scope": "Deployment",
+              "maximum": 10
+            }
+          ]
+        }
+      }
+    ],
+    "invalid": [
+      {
+        "release_id": "phone-r1",
+        "state": "Recorded",
+        "extension_id": "phone",
+        "specification": {
+          "location": "https://example.invalid/releases/phone/config.schema.json",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "artifacts": []
+      }
+    ]
+  }
+]

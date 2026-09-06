@@ -25,6 +25,21 @@
         "via": "release_id"
       }
     },
+    "deployment_id": {
+      "$ref": "#/$defs/extensions.control.DeploymentRef"
+    },
+    "origin": {
+      "$ref": "#/$defs/extensions.control.InstallationOrigin"
+    },
+    "configuration": {
+      "$ref": "#/$defs/extensions.control.ConfigurationSnapshot"
+    },
+    "policy_snapshot": {
+      "$ref": "#/$defs/extensions.control.PolicySnapshot"
+    },
+    "count_membership": {
+      "$ref": "#/$defs/extensions.control.CountMembership"
+    },
     "state": {
       "$ref": "#/$defs/extensions.control.Installation.State"
     }
@@ -34,17 +49,88 @@
     "tenant_id",
     "name",
     "release_id",
+    "deployment_id",
+    "origin",
+    "configuration",
+    "policy_snapshot",
+    "count_membership",
     "state"
   ],
   "additionalProperties": false,
   "x-ess-provenance": {
     "system": "extensions",
     "specification_version": "v1",
-    "source_digest": "dcfe77a3b92d90c9d51fe2b31ce6339f77243f71955cb6d2eeffc285e473c348",
-    "contract_digest": "35f7c463ac16ae076579afcdac0635bbf34b9bc15d3c8bddb275f43517ae2afe",
+    "source_digest": "7a46153c4886311fa3e83b4f41cee2b8fdde849369f1eb0845ee39cc8b0f1401",
+    "contract_digest": "12397606cdf7dee4cfac1fb2ef1cc61d42acb6148e6be2fc8d128c0372fce09e",
     "regenerate": "ess generate"
   },
   "$defs": {
+    "extensions.control.AdmissionKey": {
+      "title": "AdmissionKey",
+      "x-ess-name": "extensions.control.AdmissionKey",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ConfigurationDocumentKey": {
+      "title": "ConfigurationDocumentKey",
+      "x-ess-name": "extensions.control.ConfigurationDocumentKey",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ConfigurationPath": {
+      "title": "ConfigurationPath",
+      "x-ess-name": "extensions.control.ConfigurationPath",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ConfigurationRevision": {
+      "title": "ConfigurationRevision",
+      "x-ess-name": "extensions.control.ConfigurationRevision",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value > 0"
+      ]
+    },
+    "extensions.control.ConfigurationSnapshot": {
+      "title": "ConfigurationSnapshot",
+      "x-ess-name": "extensions.control.ConfigurationSnapshot",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/extensions.control.ConfigurationRevision"
+        },
+        "document_key": {
+          "$ref": "#/$defs/extensions.control.ConfigurationDocumentKey"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "revision",
+        "document_key",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.CountMembership": {
+      "title": "CountMembership",
+      "x-ess-name": "extensions.control.CountMembership",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Held",
+        "Released"
+      ]
+    },
+    "extensions.control.DeploymentRef": {
+      "title": "DeploymentRef",
+      "x-ess-name": "extensions.control.DeploymentRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
     "extensions.control.Installation.State": {
       "title": "State",
       "x-ess-name": "extensions.control.Installation.State",
@@ -54,9 +140,178 @@
         "Recorded"
       ]
     },
+    "extensions.control.InstallationCount": {
+      "title": "InstallationCount",
+      "x-ess-name": "extensions.control.InstallationCount",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value >= 0"
+      ]
+    },
     "extensions.control.InstallationId": {
       "title": "InstallationId",
       "x-ess-name": "extensions.control.InstallationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.InstallationLimit": {
+      "title": "InstallationLimit",
+      "x-ess-name": "extensions.control.InstallationLimit",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/extensions.control.LimitScope"
+        },
+        "maximum": {
+          "$ref": "#/$defs/extensions.control.InstallationCount"
+        }
+      },
+      "required": [
+        "scope",
+        "maximum"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.InstallationLocks": {
+      "title": "InstallationLocks",
+      "x-ess-name": "extensions.control.InstallationLocks",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "version_updates": {
+          "type": "boolean"
+        },
+        "enable_disable": {
+          "type": "boolean"
+        },
+        "removal": {
+          "type": "boolean"
+        },
+        "configuration": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "version_updates",
+        "enable_disable",
+        "removal",
+        "configuration"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.InstallationOrigin": {
+      "title": "InstallationOrigin",
+      "x-ess-name": "extensions.control.InstallationOrigin",
+      "x-ess-kind": "union",
+      "oneOf": [
+        {
+          "title": "preinstalled",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "preinstalled"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.PreinstallationKey"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "title": "requested",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "requested"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.AdmissionKey"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "x-ess-union-tag": "kind"
+    },
+    "extensions.control.InstallationPolicy": {
+      "title": "InstallationPolicy",
+      "x-ess-name": "extensions.control.InstallationPolicy",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "locks": {
+          "$ref": "#/$defs/extensions.control.InstallationLocks"
+        },
+        "editable_settings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/extensions.control.ConfigurationPath"
+          }
+        },
+        "count_limits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/extensions.control.InstallationLimit"
+          }
+        }
+      },
+      "required": [
+        "locks",
+        "editable_settings",
+        "count_limits"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.LimitScope": {
+      "title": "LimitScope",
+      "x-ess-name": "extensions.control.LimitScope",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Tenant",
+        "Deployment"
+      ]
+    },
+    "extensions.control.PolicyRevision": {
+      "title": "PolicyRevision",
+      "x-ess-name": "extensions.control.PolicyRevision",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.PolicySnapshot": {
+      "title": "PolicySnapshot",
+      "x-ess-name": "extensions.control.PolicySnapshot",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/extensions.control.PolicyRevision"
+        },
+        "rules": {
+          "$ref": "#/$defs/extensions.control.InstallationPolicy"
+        }
+      },
+      "required": [
+        "revision",
+        "rules"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.PreinstallationKey": {
+      "title": "PreinstallationKey",
+      "x-ess-name": "extensions.control.PreinstallationKey",
       "x-ess-kind": "newtype",
       "type": "string"
     },

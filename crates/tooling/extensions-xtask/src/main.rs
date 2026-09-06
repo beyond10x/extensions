@@ -5,6 +5,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
+mod schema_controls;
+
 const ESS_REPOSITORY: &str = "https://github.com/beyond10x/ess.git";
 const ESS_REVISION: &str = "6ef4af76b99a8d2cd861a3cc76140c88c1361129";
 const ESS_VERSION: &str = "ess 0.9.2";
@@ -18,7 +20,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Task {
-    /// Validate sources, deterministic projections and relation refusal controls.
+    /// Validate sources, deterministic projections and contract refusal controls.
     Check,
     /// Regenerate the committed schema projections with the pinned compiler.
     Generate,
@@ -194,6 +196,7 @@ fn check(root: &Path, ess: &Path) -> Result<()> {
         generated.len()
     );
     refusal_controls(ess, &source, scratch.path())?;
+    schema_controls::check(root)?;
     println!("gate: valid structural model; operational scenarios remain unimplemented");
     Ok(())
 }
