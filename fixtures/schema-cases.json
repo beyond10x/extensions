@@ -1196,6 +1196,56 @@
           "actor_id": "caller",
           "executor": "run"
         }
+      },
+      {
+        "kind": "installation",
+        "value": {
+          "installation_id": "phone-west",
+          "capability": "calling",
+          "tenant_id": "forged"
+        }
+      },
+      {
+        "kind": "installation",
+        "value": {
+          "installation_id": "phone-west",
+          "capability": "calling",
+          "realm": "forged"
+        }
+      },
+      {
+        "kind": "installation",
+        "value": {
+          "installation_id": "phone-west",
+          "capability": "calling",
+          "actor_id": "forged"
+        }
+      },
+      {
+        "kind": "installation",
+        "value": {
+          "installation_id": "phone-west",
+          "capability": "calling",
+          "executor": "forged"
+        }
+      },
+      {
+        "kind": "installation",
+        "value": {
+          "installation_id": "phone-west",
+          "capability": "calling",
+          "token": "forged"
+        }
+      },
+      {
+        "kind": "installation",
+        "value": {
+          "capability": "calling"
+        }
+      },
+      {
+        "kind": "foundation",
+        "value": {}
       }
     ]
   },
@@ -1263,6 +1313,21 @@
         "target": "phone-west",
         "compatibility": {
           "revision": "calling-v1",
+          "contract": {
+            "location": "https://example.invalid/contracts/calling.json",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        }
+      },
+      {
+        "name": "calls",
+        "target": {
+          "kind": "foundation",
+          "value": {
+            "capability": "calling"
+          }
+        },
+        "compatibility": {
           "contract": {
             "location": "https://example.invalid/contracts/calling.json",
             "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
@@ -1896,6 +1961,123 @@
           "attempt": 1
         },
         "attempt": 1
+      },
+      {
+        "installation_id": "phone-east",
+        "contribution_id": "calls-v1",
+        "activation": {
+          "generation": 1,
+          "attempt": 1,
+          "snapshot": {
+            "release_id": "phone-r1",
+            "configuration": {
+              "revision": 1,
+              "document_key": "config/rev-1",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            "bindings": {
+              "revision": 1,
+              "selections": [
+                {
+                  "name": "calls",
+                  "target": {
+                    "kind": "foundation",
+                    "value": {
+                      "capability": "calling"
+                    }
+                  },
+                  "compatibility": {
+                    "revision": "calling-v1",
+                    "contract": {
+                      "location": "https://example.invalid/contracts/calling.json",
+                      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "realm": "forged"
+        },
+        "attempt": 1
+      },
+      {
+        "installation_id": "phone-east",
+        "contribution_id": "calls-v1",
+        "activation": {
+          "generation": 1,
+          "attempt": 1,
+          "snapshot": {
+            "release_id": "phone-r1",
+            "configuration": {
+              "revision": 1,
+              "document_key": "config/rev-1",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            "bindings": {
+              "revision": 1,
+              "selections": [
+                {
+                  "name": "calls",
+                  "target": {
+                    "kind": "foundation",
+                    "value": {
+                      "capability": "calling"
+                    }
+                  },
+                  "compatibility": {
+                    "revision": "calling-v1",
+                    "contract": {
+                      "location": "https://example.invalid/contracts/calling.json",
+                      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "tenant_id": "forged"
+        },
+        "attempt": 1
+      },
+      {
+        "installation_id": "phone-east",
+        "contribution_id": "calls-v1",
+        "activation": {
+          "generation": 1,
+          "attempt": 1,
+          "snapshot": {
+            "release_id": "phone-r1",
+            "configuration": {
+              "revision": 1,
+              "document_key": "config/rev-1",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            "bindings": {
+              "revision": 1,
+              "selections": [
+                {
+                  "name": "calls",
+                  "target": {
+                    "kind": "foundation",
+                    "value": {
+                      "capability": "calling"
+                    }
+                  },
+                  "compatibility": {
+                    "revision": "calling-v1",
+                    "contract": {
+                      "location": "https://example.invalid/contracts/calling.json",
+                      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "owner_registration_key": "forged"
+        },
+        "attempt": 1
       }
     ]
   },
@@ -2219,6 +2401,30 @@
           "location": "https://example.invalid/contracts/calling.json",
           "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         }
+      },
+      {
+        "contribution_id": "calls-v1",
+        "release_id": "phone-r1",
+        "state": "Recorded",
+        "category": "Ui",
+        "requirement": "Required",
+        "owning_runtime": "agent-platform",
+        "compatibility_contract": {
+          "location": "https://example.invalid/contracts/calling.json",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      {
+        "contribution_id": "calls-v1",
+        "release_id": "phone-r1",
+        "state": "Recorded",
+        "category": "Ui",
+        "requirement": "Optional",
+        "owning_runtime": "agent-platform",
+        "compatibility_contract": {
+          "location": "https://example.invalid/contracts/calling.json",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
       }
     ],
     "invalid": [
@@ -2422,6 +2628,102 @@
             }
           }
         }
+      },
+      {
+        "registration_id": "east-calls",
+        "installation_id": "phone-east",
+        "contribution_id": "calls-v1",
+        "owner_registration_key": "east-calls-owner",
+        "state": "Registering",
+        "progress": {
+          "kind": "registering",
+          "value": {
+            "installation_id": "phone-east",
+            "contribution_id": "calls-v1",
+            "activation": {
+              "generation": 1,
+              "attempt": 1,
+              "snapshot": {
+                "release_id": "phone-r1",
+                "configuration": {
+                  "revision": 1,
+                  "document_key": "config/rev-1",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                },
+                "bindings": {
+                  "revision": 1,
+                  "selections": [
+                    {
+                      "name": "calls",
+                      "target": {
+                        "kind": "foundation",
+                        "value": {
+                          "capability": "calling"
+                        }
+                      },
+                      "compatibility": {
+                        "revision": "calling-v1",
+                        "contract": {
+                          "location": "https://example.invalid/contracts/calling.json",
+                          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "attempt": 2
+          }
+        }
+      },
+      {
+        "registration_id": "east-calls",
+        "installation_id": "phone-east",
+        "contribution_id": "calls-v1",
+        "owner_registration_key": "east-calls-owner",
+        "state": "Registering",
+        "progress": {
+          "kind": "registering",
+          "value": {
+            "installation_id": "phone-east",
+            "contribution_id": "calls-v1",
+            "activation": {
+              "generation": 2,
+              "attempt": 1,
+              "snapshot": {
+                "release_id": "phone-r1",
+                "configuration": {
+                  "revision": 1,
+                  "document_key": "config/rev-1",
+                  "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                },
+                "bindings": {
+                  "revision": 1,
+                  "selections": [
+                    {
+                      "name": "calls",
+                      "target": {
+                        "kind": "foundation",
+                        "value": {
+                          "capability": "calling"
+                        }
+                      },
+                      "compatibility": {
+                        "revision": "calling-v1",
+                        "contract": {
+                          "location": "https://example.invalid/contracts/calling.json",
+                          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "attempt": 1
+          }
+        }
       }
     ],
     "invalid": [
@@ -2541,6 +2843,78 @@
           }
         },
         "tenant_id": "other"
+      },
+      {
+        "attempt": {
+          "generation": 1,
+          "attempt": 1,
+          "snapshot": {
+            "release_id": "phone-r1",
+            "configuration": {
+              "revision": 1,
+              "document_key": "config/rev-1",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            "bindings": {
+              "revision": 1,
+              "selections": [
+                {
+                  "name": "calls",
+                  "target": {
+                    "kind": "foundation",
+                    "value": {
+                      "capability": "calling"
+                    }
+                  },
+                  "compatibility": {
+                    "revision": "calling-v1",
+                    "contract": {
+                      "location": "https://example.invalid/contracts/calling.json",
+                      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "installation_id": "phone-east",
+        "attempt": {
+          "generation": 1,
+          "attempt": 1,
+          "snapshot": {
+            "release_id": "phone-r1",
+            "configuration": {
+              "revision": 1,
+              "document_key": "config/rev-1",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            "bindings": {
+              "revision": 1,
+              "selections": [
+                {
+                  "name": "calls",
+                  "target": {
+                    "kind": "foundation",
+                    "value": {
+                      "capability": "calling"
+                    }
+                  },
+                  "compatibility": {
+                    "revision": "calling-v1",
+                    "contract": {
+                      "location": "https://example.invalid/contracts/calling.json",
+                      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "realm": "installation-as-realm"
       }
     ]
   },
@@ -2707,6 +3081,78 @@
           }
         },
         "tenant_id": "other"
+      },
+      {
+        "attempt": {
+          "generation": 1,
+          "attempt": 1,
+          "snapshot": {
+            "release_id": "phone-r1",
+            "configuration": {
+              "revision": 1,
+              "document_key": "config/rev-1",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            "bindings": {
+              "revision": 1,
+              "selections": [
+                {
+                  "name": "calls",
+                  "target": {
+                    "kind": "foundation",
+                    "value": {
+                      "capability": "calling"
+                    }
+                  },
+                  "compatibility": {
+                    "revision": "calling-v1",
+                    "contract": {
+                      "location": "https://example.invalid/contracts/calling.json",
+                      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "installation_id": "phone-east",
+        "attempt": {
+          "generation": 1,
+          "attempt": 1,
+          "snapshot": {
+            "release_id": "phone-r1",
+            "configuration": {
+              "revision": 1,
+              "document_key": "config/rev-1",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            "bindings": {
+              "revision": 1,
+              "selections": [
+                {
+                  "name": "calls",
+                  "target": {
+                    "kind": "foundation",
+                    "value": {
+                      "capability": "calling"
+                    }
+                  },
+                  "compatibility": {
+                    "revision": "calling-v1",
+                    "contract": {
+                      "location": "https://example.invalid/contracts/calling.json",
+                      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "realm": "installation-as-realm"
       }
     ]
   },
@@ -2888,6 +3334,124 @@
           "retryable": true
         },
         "tenant_id": "other"
+      },
+      {
+        "attempt": {
+          "generation": 1,
+          "attempt": 1,
+          "snapshot": {
+            "release_id": "phone-r1",
+            "configuration": {
+              "revision": 1,
+              "document_key": "config/rev-1",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            "bindings": {
+              "revision": 1,
+              "selections": [
+                {
+                  "name": "calls",
+                  "target": {
+                    "kind": "foundation",
+                    "value": {
+                      "capability": "calling"
+                    }
+                  },
+                  "compatibility": {
+                    "revision": "calling-v1",
+                    "contract": {
+                      "location": "https://example.invalid/contracts/calling.json",
+                      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "failure": {
+          "code": "OwnerUnavailable",
+          "detail": "Owner response timed out",
+          "retryable": true
+        }
+      },
+      {
+        "installation_id": "phone-east",
+        "attempt": {
+          "generation": 1,
+          "attempt": 1,
+          "snapshot": {
+            "release_id": "phone-r1",
+            "configuration": {
+              "revision": 1,
+              "document_key": "config/rev-1",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            "bindings": {
+              "revision": 1,
+              "selections": [
+                {
+                  "name": "calls",
+                  "target": {
+                    "kind": "foundation",
+                    "value": {
+                      "capability": "calling"
+                    }
+                  },
+                  "compatibility": {
+                    "revision": "calling-v1",
+                    "contract": {
+                      "location": "https://example.invalid/contracts/calling.json",
+                      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "installation_id": "phone-east",
+        "attempt": {
+          "generation": 1,
+          "attempt": 1,
+          "snapshot": {
+            "release_id": "phone-r1",
+            "configuration": {
+              "revision": 1,
+              "document_key": "config/rev-1",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            },
+            "bindings": {
+              "revision": 1,
+              "selections": [
+                {
+                  "name": "calls",
+                  "target": {
+                    "kind": "foundation",
+                    "value": {
+                      "capability": "calling"
+                    }
+                  },
+                  "compatibility": {
+                    "revision": "calling-v1",
+                    "contract": {
+                      "location": "https://example.invalid/contracts/calling.json",
+                      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "failure": {
+          "code": "OwnerUnavailable",
+          "detail": "Owner response timed out",
+          "retryable": true
+        },
+        "realm": "installation-as-realm"
       }
     ]
   },
@@ -3082,6 +3646,131 @@
           "attempt": 1
         },
         "tenant_id": "other"
+      },
+      {
+        "owner_registration_key": "east-calls-owner",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        }
+      },
+      {
+        "registration_id": "east-calls",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        }
+      },
+      {
+        "registration_id": "east-calls",
+        "owner_registration_key": "east-calls-owner",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        },
+        "realm": "installation-as-realm"
       }
     ]
   },
@@ -3277,6 +3966,176 @@
         },
         "receipt": "owner-observation-1",
         "tenant_id": "other"
+      },
+      {
+        "owner_registration_key": "east-calls-owner",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        },
+        "receipt": "owner-observation-1"
+      },
+      {
+        "registration_id": "east-calls",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        },
+        "receipt": "owner-observation-1"
+      },
+      {
+        "registration_id": "east-calls",
+        "owner_registration_key": "east-calls-owner",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        }
+      },
+      {
+        "registration_id": "east-calls",
+        "owner_registration_key": "east-calls-owner",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        },
+        "receipt": "owner-observation-1",
+        "realm": "installation-as-realm"
       }
     ]
   },
@@ -3487,6 +4346,188 @@
           "retryable": true
         },
         "tenant_id": "other"
+      },
+      {
+        "owner_registration_key": "east-calls-owner",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        },
+        "failure": {
+          "code": "OwnerUnavailable",
+          "detail": "Owner response timed out",
+          "retryable": true
+        }
+      },
+      {
+        "registration_id": "east-calls",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        },
+        "failure": {
+          "code": "OwnerUnavailable",
+          "detail": "Owner response timed out",
+          "retryable": true
+        }
+      },
+      {
+        "registration_id": "east-calls",
+        "owner_registration_key": "east-calls-owner",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        }
+      },
+      {
+        "registration_id": "east-calls",
+        "owner_registration_key": "east-calls-owner",
+        "attempt": {
+          "installation_id": "phone-east",
+          "contribution_id": "calls-v1",
+          "activation": {
+            "generation": 1,
+            "attempt": 1,
+            "snapshot": {
+              "release_id": "phone-r1",
+              "configuration": {
+                "revision": 1,
+                "document_key": "config/rev-1",
+                "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              },
+              "bindings": {
+                "revision": 1,
+                "selections": [
+                  {
+                    "name": "calls",
+                    "target": {
+                      "kind": "foundation",
+                      "value": {
+                        "capability": "calling"
+                      }
+                    },
+                    "compatibility": {
+                      "revision": "calling-v1",
+                      "contract": {
+                        "location": "https://example.invalid/contracts/calling.json",
+                        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "attempt": 1
+        },
+        "failure": {
+          "code": "OwnerUnavailable",
+          "detail": "Owner response timed out",
+          "retryable": true
+        },
+        "realm": "installation-as-realm"
       }
     ]
   },
@@ -3598,6 +4639,99 @@
           "retryable": true
         },
         "realm": "installation-id"
+      }
+    ]
+  },
+  {
+    "schema": "errors/extensions.control.InstallationStateConflict.schema.json",
+    "valid": [
+      {
+        "state": "Recorded"
+      },
+      {
+        "state": "Activating"
+      },
+      {
+        "state": "ActivationFailed"
+      },
+      {
+        "state": "Active"
+      }
+    ],
+    "invalid": [
+      {},
+      {
+        "state": "Registering"
+      },
+      {
+        "state": "Recorded",
+        "realm": "installation-as-realm"
+      }
+    ]
+  },
+  {
+    "schema": "errors/extensions.control.RegistrationStateConflict.schema.json",
+    "valid": [
+      {
+        "state": "Recorded"
+      },
+      {
+        "state": "Registering"
+      },
+      {
+        "state": "RegistrationFailed"
+      },
+      {
+        "state": "Ready"
+      }
+    ],
+    "invalid": [
+      {},
+      {
+        "state": "Activating"
+      },
+      {
+        "state": "Recorded",
+        "realm": "installation-as-realm"
+      }
+    ]
+  },
+  {
+    "schema": "errors/extensions.control.ReconciliationRefused.schema.json",
+    "valid": [
+      {
+        "reason": "Unauthorized"
+      },
+      {
+        "reason": "StaleSnapshot"
+      },
+      {
+        "reason": "ReleaseMismatch"
+      },
+      {
+        "reason": "RequiredNotReady"
+      },
+      {
+        "reason": "OwnerNotReady"
+      },
+      {
+        "reason": "IncompatibleBinding"
+      },
+      {
+        "reason": "RetryConflict"
+      },
+      {
+        "reason": "InvalidEvidence"
+      }
+    ],
+    "invalid": [
+      {},
+      {
+        "reason": "Timeout"
+      },
+      {
+        "reason": "Unauthorized",
+        "receipt": "forged"
       }
     ]
   }
