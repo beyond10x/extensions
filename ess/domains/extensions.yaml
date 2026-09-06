@@ -310,8 +310,10 @@ types:
         type: extensions.control.RetryAttempt
       - name: upgrade
         type: Optional<extensions.control.UpgradeAttempt>
-    # Omitted for selected-release work. When present, activation.snapshot equals the current
+    # Omitted for selected-release work. At new dispatch, activation.snapshot equals the current
     # authorized upgrade candidate, with matching generation and intent. It grants no selection.
+    # An exact still-pending stored attempt retains its context after upgrade failure or during removal;
+    # authenticated observation-only recovery may settle it without new dispatch/readiness credit.
 
   - name: extensions.control.RegistrationReady
     kind: struct
@@ -757,9 +759,11 @@ entities:
         target: extensions.control.ContributionDeclaration
         cardinality: one
         via: contribution_id
-    # Runtime obligations: declaration belongs to selected release or exact authorized candidate;
-    # candidate readiness is scoped to its current upgrade and does not make it selected. Owner-only
-    # observation matches installation, declaration, stable key and current activation snapshot.
+    # New dispatch requires selected-release or exact current authorized candidate provenance.
+    # Candidate readiness is scoped to its current upgrade and does not make it selected.
+    # Owner observation matches installation, declaration, stable key and the exact stored pending
+    # attempt. Observation-only recovery may settle that attempt after upgrade failure or during
+    # removal; it cannot reopen reach, credit another intent or overwrite superseding evidence.
     # Never derive the stable key from generation/attempt, even after an ambiguous owner response.
     # UNMAPPED: owner resource-reference cardinality, key encoding and atomic recovery protocol.
     # OwnerReceiptRef is opaque observation evidence, not an owned resource or authority token.
@@ -916,6 +920,8 @@ commands:
         external: >-
           Current authenticated registration authority, exact selected-release or current authorized
           upgrade-candidate context, declaration, stable key or retry admission refuse before owner dispatch.
+          Removal having begun or candidate dispatch authorization no longer applying also refuses;
+          historical pending-attempt recovery is observation-only, never permission for new dispatch.
         error: extensions.control.ReconciliationRefused
       - name: wrong-state
         wrong_state: true
@@ -945,8 +951,12 @@ commands:
             receipt: input.receipt
       - name: refused
         external: >-
-          Current authenticated declared-owner authority, exact selected-release or current authorized
-          upgrade-candidate attempt, declaration, stable key or positive owner readiness evidence refuse.
+          Current authenticated control/declared-owner observation authority, exact stored unresolved
+          registration identity, declaration, owner key and attempt, or positive owner evidence refuse.
+          Besides current selected/candidate observations, observation-only recovery may settle the exact
+          still-pending attempt after upgrade failure or during removal. Superseded or merely supplied
+          historical evidence refuses; recovery grants no new dispatch, control reach or readiness credit
+          to a different intent and cannot change selection or release capacity.
         error: extensions.control.ReconciliationRefused
       - name: wrong-state
         wrong_state: true
@@ -976,8 +986,12 @@ commands:
             failure: input.failure
       - name: refused
         external: >-
-          Current authenticated declared-owner authority, exact selected-release or current authorized
-          upgrade-candidate attempt, declaration, stable key or owner failure evidence refuse; readiness is not required.
+          Current authenticated control/declared-owner observation authority, exact stored unresolved
+          registration identity, declaration, owner key and attempt, or owner failure evidence refuse.
+          Besides current selected/candidate observations, observation-only recovery may settle the exact
+          still-pending attempt after upgrade failure or during removal. Superseded or merely supplied
+          historical evidence refuses; recovery grants no new dispatch or control reach and cannot change
+          selection or release capacity. Successful readiness is not required to record failure.
         error: extensions.control.ReconciliationRefused
       - name: wrong-state
         wrong_state: true

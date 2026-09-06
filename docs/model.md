@@ -326,10 +326,13 @@ are internal control observations produced by that reconciler after authenticate
 the declared runtime owner (or from Extensions' own activation coordinator for activation). An
 application caller cannot assert readiness, manufacture a receipt, select an owner identity or
 supply replacement authentication. A typed input alone does not prove that its sender is trusted.
-All commands re-check ordinary admission, current policy/action authority, stored instance,
-current generation/attempt and exact snapshot before recording anything. Owner observation must
-match the owner named by the immutable declaration and the same installation, stable key, release,
-declaration and current snapshot; cross-owner and delayed/stale observations are refused.
+All commands re-check ordinary admission, current policy/action authority and stored instance
+before recording anything. New dispatch and readiness credit require the current authorized
+generation/attempt and exact snapshot. Registration observations must match the owner named by
+the immutable declaration and the exact still-pending stored installation, declaration, stable
+key, attempt and snapshot. Observation-only recovery can settle that original pending attempt
+after upgrade failure or during removal, as defined below. Cross-owner, mismatched or superseded
+observations refuse; merely arriving late does not make an exact unresolved observation stale.
 
 BeginActivation records the current intended snapshot and running evidence before work is
 scheduled. A failed activation may start a retry of that snapshot or a new reconciliation
@@ -337,12 +340,15 @@ generation; generation changes do not change configuration, bindings, release, i
 stable owner registration identity. BeginRegistration requires the owning installation to be Activating for the submitted generation;
 an Optional failed selected registration may also retry while its same generation is Active,
 Upgrading or UpgradeFailed under current admission. Candidate registration instead requires the
-current Upgrading intent and exact candidate context described below. It persists registering
-evidence before owner dispatch. Required registration retry
+current Upgrading intent and exact candidate context described below. No BeginRegistration may
+start new dispatch after removal has begun or when that candidate dispatch authorization no longer
+applies. It persists registering evidence before owner dispatch. Required registration retry
 after Active is outside this finite draft.
 ConfirmRegistration requires positive readiness observed from its authenticated owner; a submitted
 receipt or a successful schema validation is insufficient. FailRegistration records authenticated
-failure evidence without pretending a resource is absent or compensation succeeded.
+failure evidence without pretending a resource is absent or compensation succeeded. Both commands
+can also settle an exact stored pending attempt under the observation-only recovery boundary below;
+that exception authorizes no new owner dispatch and grants no current readiness for another intent.
 
 ConfirmActivation requires **every Required declaration** of the selected release to have its
 matching Ready registration and current owner evidence for the exact generation/configuration/
@@ -454,13 +460,33 @@ the old selection and documents intact, exposes partial candidate work, and allo
 ### Candidate readiness has a narrower meaning
 
 A `RegistrationAttempt` may now carry optional `upgrade` context. Omission retains selected-release
-meaning. Presence names the authorized current `UpgradeAttempt`; its activation snapshot and
-generation/activation attempt counter must equal that upgrade's candidate attempt, and its
-declaration must belong to that candidate
-release. The installation must be Upgrading for new candidate dispatch. An arbitrary historical,
-failed or future candidate cannot use this exception. Candidate readiness can satisfy only the
-matching ConfirmUpgrade, never ConfirmActivation or current selected-release readiness. The
-exception grants no caller/owner authority and does not change the selected-release relation.
+meaning. At new dispatch, presence names the authorized current `UpgradeAttempt`; its activation
+snapshot, generation and activation attempt counter must equal that upgrade's candidate attempt,
+and its declaration must belong to that candidate release. The installation must be Upgrading for
+new candidate dispatch. An arbitrary historical, failed or future candidate cannot authorize new
+dispatch or current readiness credit. Candidate readiness can satisfy only the matching current
+ConfirmUpgrade, never ConfirmActivation or selected-release readiness. The exception grants no
+caller/owner authority and does not change the selected-release relation.
+
+An already Registering record has a separate **observation-only recovery** boundary. If its exact
+recorded attempt remains unresolved after FailUpgrade, ConfirmRegistration or FailRegistration may
+settle it under current authenticated control/declared-owner observation authority. The same rule
+applies to pending selected or candidate attempts during Removing or RemovalFailed. Match the stored
+registration and installation identities, declaration, owner registration key, complete attempt
+and snapshot, including its original upgrade context; a caller-supplied historical snapshot or
+receipt alone grants nothing. A changed/superseded attempt or owner key must refuse without
+overwriting newer evidence. Recovery records the authenticated outcome for that original pending
+intent; it issues no new owner request and never bypasses current authority or owner lookup safety.
+
+A recovered Ready result is owner-observation evidence for accounting and required detachment.
+It cannot reopen selected/candidate control reach, reactivate an installation, switch selection,
+satisfy readiness for a different current selected/candidate intent, or release capacity. Recovery
+of failure likewise retains partial-effect evidence without pretending compensation succeeded.
+BeginRegistration remains subject to current dispatch admission and cannot use this boundary to
+retry failed candidate work or start any owner dispatch after removal begins. The existing
+Registering→Ready/RegistrationFailed transitions supply the outcome boundary; no new owner wire
+protocol or executable cross-record guard is claimed. Current removal/quiescence checks remain
+necessary before detachment and confirmed removal.
 
 Old selected registrations remain distinguishable by their immutable declaration and snapshot.
 Optional selected registrations may continue their existing retry path during Upgrading or
@@ -531,8 +557,10 @@ existing registration/readiness provenance is preserved. `ControlDetachmentResul
 references an authenticated owner acknowledgment that the applicable installation control reach is
 detached. `never_dispatched` requires durable control evidence that this exact registration intent
 never reached an owner and cannot still be dispatched. It is not available after any ambiguous
-owner dispatch. A Registering record must first recover the pending owner result and reach Ready
-or RegistrationFailed; a timeout alone cannot establish no dispatch or complete detachment.
+owner dispatch. A Registering record must first settle its exact pending owner result through the
+observation-only ConfirmRegistration/FailRegistration boundary and reach Ready or RegistrationFailed,
+including after upgrade failure or during removal. This does not restore control reach or credit
+new readiness. A timeout alone cannot establish no dispatch or complete detachment.
 
 Detached does not mean an owner's agent, workflow run, Connection, grant or data has been deleted.
 An unavailable owner, unresolved response or unsupported owner retirement contract leaves cleanup
@@ -613,7 +641,7 @@ required before implementation work that relies on them.
 | Policy and count enforcement | Source revisions, authenticated retry-key encoding, atomic bucket reservations and cleanup confirmation |
 | External deployment relation | Trusted bootstrap reference contract and retirement behavior |
 | Resource binding admission | Public capability registry, compatibility evaluation, tenant-local resolution and current action authorization |
-| Registration consistency | Runtime enforcement of selected/candidate declaration context and exact current generation/configuration/binding readiness |
+| Registration consistency | Runtime enforcement of current dispatch/readiness context and separately authorized exact pending-attempt observation recovery, without superseding newer evidence |
 | Runtime resource references | Owner contracts must establish cardinality and distinguish control references from resource ownership |
 | Activation and recovery | Field assignment, atomic persistence/events/replay, exact retry equality/retention, owner lookup/re-attestation and ambiguous-result recovery |
 | Installation isolation | SDK propagation/storage wire evolution and physical namespace/routing/event/idempotency encoding |
