@@ -5,7 +5,7 @@ kind: executable-system-specification
 status: draft
 title: Extension control domain model
 summary: Public structural ESS model for extension releases, tenant installations and contribution registration.
-revision: 5
+revision: 6
 ---
 # Extension control domain model
 
@@ -54,3 +54,28 @@ structure; field assignment, cross-record checks, physical namespace encoding an
 transactions remain runtime obligations. No implementation server, wire migration, SDK rename,
 upgrade/removal implementation or tagged release is included. Evidence will distinguish executed
 compiler/schema refusals from the future runtime scenarios.
+
+## Binding and activation verification
+
+The candidate at 0c529f3b10dd84a111a303b9de1db8ef3941612a passed the complete model gate with
+the unchanged pinned ESS compiler: five entities/five relations, six causal commands with exact
+transitions/instances/event payloads/refusals, 77 deterministic schemas, six compiler refusal
+mutations, 55 accepted and 90 refused schema examples, and five numeric annotation-gap controls.
+Formatting and strict Clippy exited 0. The red-first causal check observed zero commands before
+the six-command draft was added; the new binding schema was absent before generation.
+
+The candidate adds binding target/compatibility values, required or optional contribution flags,
+activation/registration progress and stable owner registration keys distinct from generation and
+attempt counters. Commands operate on existing records; admission/allocation, configuration
+mutation, upgrades, removal and data destruction remain outside this pass.
+
+The original Recorded-progress fixture used null, but the pinned projection makes an Optional field
+omittable and refuses explicit null. Corrected positive examples omit the field and negative
+examples preserve the explicit-null refusal. This repairs the fixture's absence spelling rather
+than changing the model to satisfy it.
+
+Independent adversarial review and integration checks follow this candidate verification.
+The operational model remains draft: structural checks cannot establish authenticated owner
+admission, snapshot equality, required readiness, durable replay, atomic event/field persistence
+or physical installation isolation. Those requirements and unresolved owner contracts remain
+explicit in docs/model.md and docs/scenarios.md.
