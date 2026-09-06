@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.ConfigurationUpgradeOutcome",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "3c8cf3979574bf14949cb369bffe118822c00b7642320c11ae035a468c40b865",
+    "contract_digest": "c19b1c4031e0cfd1a4a957879d2aebb65fc7b790c100660b235a0fa9673db1f3",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.AdmittedConfigurationMigration": {
+      "title": "AdmittedConfigurationMigration",
+      "x-ess-name": "extensions.control.AdmittedConfigurationMigration",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "contract": {
+          "$ref": "#/$defs/extensions.control.ArtifactReference"
+        },
+        "authorization": {
+          "$ref": "#/$defs/extensions.control.ControlReceiptRef"
+        },
+        "receipt": {
+          "$ref": "#/$defs/extensions.control.ControlReceiptRef"
+        }
+      },
+      "required": [
+        "contract",
+        "authorization",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ArtifactReference": {
+      "title": "ArtifactReference",
+      "x-ess-name": "extensions.control.ArtifactReference",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ConfigurationUpgradeOutcome": {
+      "title": "ConfigurationUpgradeOutcome",
+      "x-ess-name": "extensions.control.ConfigurationUpgradeOutcome",
+      "x-ess-kind": "union",
+      "oneOf": [
+        {
+          "title": "migrated",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "migrated"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.AdmittedConfigurationMigration"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "title": "preserved",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "preserved"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.ControlReceiptRef"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "x-ess-union-tag": "kind"
+    },
+    "extensions.control.ControlReceiptRef": {
+      "title": "ControlReceiptRef",
+      "x-ess-name": "extensions.control.ControlReceiptRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

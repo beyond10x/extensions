@@ -4,8 +4,8 @@
   "x-ess-provenance": {
     "system": "extensions",
     "specification_version": "v1",
-    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
-    "contract_digest": "776b195f1e2114544ab9bb1df50c6cea37c96dffcab12928458b556b7d3e49b4",
+    "source_digest": "3c8cf3979574bf14949cb369bffe118822c00b7642320c11ae035a468c40b865",
+    "contract_digest": "796ab541943ce81abddd2d9d585efd37beb33b0f4ce94e7bdd6e236f8d8f4b80",
     "regenerate": "ess generate"
   },
   "$defs": {
@@ -20,7 +20,14 @@
         "BindingUnavailable",
         "IncompatibleBinding",
         "RequiredContributionFailed",
-        "InvalidConfiguration"
+        "InvalidConfiguration",
+        "CompatibilityFailed",
+        "MigrationFailed",
+        "CleanupFailed",
+        "DependencyConflict",
+        "QuiescencePending",
+        "AmbiguousOwnerResult",
+        "DestructionFailed"
       ]
     }
   }

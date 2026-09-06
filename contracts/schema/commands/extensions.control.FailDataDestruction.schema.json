@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FailDataDestruction input",
+  "x-ess-name": "extensions.control.FailDataDestruction",
+  "x-ess-kind": "command-input",
+  "type": "object",
+  "properties": {
+    "installation_id": {
+      "$ref": "#/$defs/extensions.control.InstallationId"
+    },
+    "attempt": {
+      "$ref": "#/$defs/extensions.control.DataDestructionAttempt"
+    },
+    "failure": {
+      "$ref": "#/$defs/extensions.control.FailureEvidence"
+    }
+  },
+  "required": [
+    "installation_id",
+    "attempt",
+    "failure"
+  ],
+  "additionalProperties": false,
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "3c8cf3979574bf14949cb369bffe118822c00b7642320c11ae035a468c40b865",
+    "contract_digest": "92891d4f25d074845bd851f04aa4b8e661489558405dc5b354c45ca981aa4feb",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ControlReceiptRef": {
+      "title": "ControlReceiptRef",
+      "x-ess-name": "extensions.control.ControlReceiptRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.DataDestructionAttempt": {
+      "title": "DataDestructionAttempt",
+      "x-ess-name": "extensions.control.DataDestructionAttempt",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/extensions.control.DataDestructionIntent"
+        },
+        "attempt": {
+          "$ref": "#/$defs/extensions.control.RetryAttempt"
+        }
+      },
+      "required": [
+        "intent",
+        "attempt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.DataDestructionIntent": {
+      "title": "DataDestructionIntent",
+      "x-ess-name": "extensions.control.DataDestructionIntent",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/extensions.control.OperationId"
+        },
+        "removal_operation_id": {
+          "$ref": "#/$defs/extensions.control.OperationId"
+        },
+        "scope": {
+          "$ref": "#/$defs/extensions.control.DataScopeRef"
+        },
+        "authorization": {
+          "$ref": "#/$defs/extensions.control.ControlReceiptRef"
+        }
+      },
+      "required": [
+        "operation_id",
+        "removal_operation_id",
+        "scope",
+        "authorization"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.DataScopeRef": {
+      "title": "DataScopeRef",
+      "x-ess-name": "extensions.control.DataScopeRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.FailureCode": {
+      "title": "FailureCode",
+      "x-ess-name": "extensions.control.FailureCode",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "OwnerUnavailable",
+        "OwnerRefused",
+        "BindingUnavailable",
+        "IncompatibleBinding",
+        "RequiredContributionFailed",
+        "InvalidConfiguration",
+        "CompatibilityFailed",
+        "MigrationFailed",
+        "CleanupFailed",
+        "DependencyConflict",
+        "QuiescencePending",
+        "AmbiguousOwnerResult",
+        "DestructionFailed"
+      ]
+    },
+    "extensions.control.FailureEvidence": {
+      "title": "FailureEvidence",
+      "x-ess-name": "extensions.control.FailureEvidence",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/extensions.control.FailureCode"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "detail",
+        "retryable"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.InstallationId": {
+      "title": "InstallationId",
+      "x-ess-name": "extensions.control.InstallationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.OperationId": {
+      "title": "OperationId",
+      "x-ess-name": "extensions.control.OperationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.RetryAttempt": {
+      "title": "RetryAttempt",
+      "x-ess-name": "extensions.control.RetryAttempt",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value > 0"
+      ]
+    }
+  }
+}

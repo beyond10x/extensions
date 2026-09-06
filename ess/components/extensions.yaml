@@ -13,6 +13,18 @@ components:
         - extensions.control.BeginRegistration
         - extensions.control.ConfirmRegistration
         - extensions.control.FailRegistration
+        - extensions.control.BeginUpgrade
+        - extensions.control.ConfirmUpgrade
+        - extensions.control.FailUpgrade
+        - extensions.control.BeginRemoval
+        - extensions.control.ConfirmRemoval
+        - extensions.control.FailRemoval
+        - extensions.control.BeginDetachment
+        - extensions.control.ConfirmDetachment
+        - extensions.control.FailDetachment
+        - extensions.control.BeginDataDestruction
+        - extensions.control.ConfirmDataDestruction
+        - extensions.control.FailDataDestruction
     publishes:
       events:
         - extensions.control.ActivationBegun
@@ -21,3 +33,15 @@ components:
         - extensions.control.RegistrationBegun
         - extensions.control.ContributionReady
         - extensions.control.RegistrationFailed
+        - extensions.control.UpgradeBegun
+        - extensions.control.InstallationUpgraded
+        - extensions.control.UpgradeFailed
+        - extensions.control.RemovalBegun
+        - extensions.control.InstallationRemoved
+        - extensions.control.RemovalFailed
+        - extensions.control.DetachmentBegun
+        - extensions.control.RegistrationDetached
+        - extensions.control.DetachmentFailed
+        - extensions.control.DataDestructionBegun
+        - extensions.control.DataScopeDestroyed
+        - extensions.control.DataDestructionFailed

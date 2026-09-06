@@ -17,8 +17,8 @@
   "x-ess-provenance": {
     "system": "extensions",
     "specification_version": "v1",
-    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
-    "contract_digest": "1c4fafeabff8e510f46bf57a7c4d7950390bb6e895acc0a8c5321595c54100ae",
+    "source_digest": "3c8cf3979574bf14949cb369bffe118822c00b7642320c11ae035a468c40b865",
+    "contract_digest": "054c457439a454dc2d4f7fe2f723e4376a3a36c8f3b20d706526f2521108caa1",
     "regenerate": "ess generate"
   },
   "$defs": {
@@ -31,7 +31,15 @@
         "Activating",
         "ActivationFailed",
         "Active",
-        "Recorded"
+        "DataScopeDestroyed",
+        "Destroying",
+        "DestructionFailed",
+        "Recorded",
+        "RemovalFailed",
+        "RemovedRetained",
+        "Removing",
+        "UpgradeFailed",
+        "Upgrading"
       ]
     }
   }

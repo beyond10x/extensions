@@ -4,8 +4,8 @@
   "x-ess-provenance": {
     "system": "extensions",
     "specification_version": "v1",
-    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
-    "contract_digest": "569d1c769b706cae6e35a88efd5e8b252d5b05dcf1f7f3d963a212a6fdb44b52",
+    "source_digest": "3c8cf3979574bf14949cb369bffe118822c00b7642320c11ae035a468c40b865",
+    "contract_digest": "41dad79c2329815b5db8382676eed52950a2f060628878b161d911918d1cf4ec",
     "regenerate": "ess generate"
   },
   "$defs": {
@@ -264,7 +264,14 @@
         "BindingUnavailable",
         "IncompatibleBinding",
         "RequiredContributionFailed",
-        "InvalidConfiguration"
+        "InvalidConfiguration",
+        "CompatibilityFailed",
+        "MigrationFailed",
+        "CleanupFailed",
+        "DependencyConflict",
+        "QuiescencePending",
+        "AmbiguousOwnerResult",
+        "DestructionFailed"
       ]
     },
     "extensions.control.FailureEvidence": {
@@ -330,6 +337,12 @@
       "x-ess-kind": "newtype",
       "type": "string"
     },
+    "extensions.control.OperationId": {
+      "title": "OperationId",
+      "x-ess-name": "extensions.control.OperationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
     "extensions.control.ReconciliationGeneration": {
       "title": "ReconciliationGeneration",
       "x-ess-name": "extensions.control.ReconciliationGeneration",
@@ -356,6 +369,9 @@
         },
         "attempt": {
           "$ref": "#/$defs/extensions.control.RetryAttempt"
+        },
+        "upgrade": {
+          "$ref": "#/$defs/extensions.control.UpgradeAttempt"
         }
       },
       "required": [
@@ -399,6 +415,52 @@
       "x-ess-invariants": [
         "value > 0"
       ]
+    },
+    "extensions.control.UpgradeAttempt": {
+      "title": "UpgradeAttempt",
+      "x-ess-name": "extensions.control.UpgradeAttempt",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/extensions.control.UpgradeIntent"
+        },
+        "generation": {
+          "$ref": "#/$defs/extensions.control.ReconciliationGeneration"
+        },
+        "attempt": {
+          "$ref": "#/$defs/extensions.control.RetryAttempt"
+        }
+      },
+      "required": [
+        "intent",
+        "generation",
+        "attempt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.UpgradeIntent": {
+      "title": "UpgradeIntent",
+      "x-ess-name": "extensions.control.UpgradeIntent",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/extensions.control.OperationId"
+        },
+        "current": {
+          "$ref": "#/$defs/extensions.control.ActivationSnapshot"
+        },
+        "candidate": {
+          "$ref": "#/$defs/extensions.control.ActivationSnapshot"
+        }
+      },
+      "required": [
+        "operation_id",
+        "current",
+        "candidate"
+      ],
+      "additionalProperties": false
     }
   }
 }

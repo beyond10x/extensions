@@ -4,8 +4,8 @@
   "x-ess-provenance": {
     "system": "extensions",
     "specification_version": "v1",
-    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
-    "contract_digest": "3ca2d7dddc47f14307df84c849f20eb761456566dccec521a9226af24087cd7e",
+    "source_digest": "3c8cf3979574bf14949cb369bffe118822c00b7642320c11ae035a468c40b865",
+    "contract_digest": "5b335c584283a3b59633f39d31fe828a65cd100591ba60c3f31258b359949a9a",
     "regenerate": "ess generate"
   },
   "$defs": {
@@ -15,6 +15,9 @@
       "x-ess-kind": "enum",
       "type": "string",
       "enum": [
+        "Detached",
+        "Detaching",
+        "DetachmentFailed",
         "Ready",
         "Recorded",
         "Registering",

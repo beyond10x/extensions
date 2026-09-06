@@ -3,7 +3,8 @@ system: extensions
 version: v1
 summary: >-
   Draft causal control-domain model for independently released extensions and named tenant
-  installations. Binding and activation contracts are declared; runtime execution, authorization
+  installations. Binding, activation, staged upgrade, removal and scoped data-destruction contracts
+  are declared; runtime execution, authorization
   and persistence remain unimplemented.
 domains:
   - extensions.control

@@ -17,8 +17,8 @@
   "x-ess-provenance": {
     "system": "extensions",
     "specification_version": "v1",
-    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
-    "contract_digest": "4f07b29188f0e65074f40bf911f144858986a63f6cd3c08ed12221a0b350c22d",
+    "source_digest": "3c8cf3979574bf14949cb369bffe118822c00b7642320c11ae035a468c40b865",
+    "contract_digest": "a984cef7cd1d51f687bc058991475a6637ca9dc2a86c1c97152f7291e921cfa2",
     "regenerate": "ess generate"
   },
   "$defs": {
@@ -35,7 +35,15 @@
         "OwnerNotReady",
         "IncompatibleBinding",
         "RetryConflict",
-        "InvalidEvidence"
+        "InvalidEvidence",
+        "VersionLocked",
+        "ConfigurationLocked",
+        "RemovalLocked",
+        "DependencyConflict",
+        "QuiescenceRequired",
+        "CleanupIncomplete",
+        "DestructionNotAuthorized",
+        "RetentionConflict"
       ]
     }
   }

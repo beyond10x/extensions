@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.ControlDetachmentResult",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "3c8cf3979574bf14949cb369bffe118822c00b7642320c11ae035a468c40b865",
+    "contract_digest": "d67b0dfaf17232b45bcece27b46012aa062e956ae29f447d6a4c6b0ff3551191",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ControlDetachmentResult": {
+      "title": "ControlDetachmentResult",
+      "x-ess-name": "extensions.control.ControlDetachmentResult",
+      "x-ess-kind": "union",
+      "oneOf": [
+        {
+          "title": "never_dispatched",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "never_dispatched"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.ControlReceiptRef"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "title": "owner_confirmed",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "owner_confirmed"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.OwnerReceiptRef"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "x-ess-union-tag": "kind"
+    },
+    "extensions.control.ControlReceiptRef": {
+      "title": "ControlReceiptRef",
+      "x-ess-name": "extensions.control.ControlReceiptRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.OwnerReceiptRef": {
+      "title": "OwnerReceiptRef",
+      "x-ess-name": "extensions.control.OwnerReceiptRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}
