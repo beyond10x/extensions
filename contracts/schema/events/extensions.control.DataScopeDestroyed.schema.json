@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DataScopeDestroyed payload",
+  "x-ess-name": "extensions.control.DataScopeDestroyed",
+  "x-ess-kind": "event-payload",
+  "type": "object",
+  "properties": {
+    "installation_id": {
+      "$ref": "#/$defs/extensions.control.InstallationId"
+    },
+    "attempt": {
+      "$ref": "#/$defs/extensions.control.DataDestructionAttempt"
+    },
+    "confirmation": {
+      "$ref": "#/$defs/extensions.control.DataDestructionConfirmation"
+    }
+  },
+  "required": [
+    "installation_id",
+    "attempt",
+    "confirmation"
+  ],
+  "additionalProperties": false,
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "9ecac55c1efc9a188a39c9af2634eec2e702d88e445a6aa6774e800e4a4ea28d",
+    "contract_digest": "8db1bc241a3f0bde988d1b92057748f49a729e18b175eafebc0fcd0450104e8f",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ControlReceiptRef": {
+      "title": "ControlReceiptRef",
+      "x-ess-name": "extensions.control.ControlReceiptRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.DataDestructionAttempt": {
+      "title": "DataDestructionAttempt",
+      "x-ess-name": "extensions.control.DataDestructionAttempt",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/extensions.control.DataDestructionIntent"
+        },
+        "attempt": {
+          "$ref": "#/$defs/extensions.control.RetryAttempt"
+        }
+      },
+      "required": [
+        "intent",
+        "attempt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.DataDestructionConfirmation": {
+      "title": "DataDestructionConfirmation",
+      "x-ess-name": "extensions.control.DataDestructionConfirmation",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "attempt": {
+          "$ref": "#/$defs/extensions.control.DataDestructionAttempt"
+        },
+        "owner_receipt": {
+          "$ref": "#/$defs/extensions.control.OwnerReceiptRef"
+        }
+      },
+      "required": [
+        "attempt",
+        "owner_receipt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.DataDestructionIntent": {
+      "title": "DataDestructionIntent",
+      "x-ess-name": "extensions.control.DataDestructionIntent",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/extensions.control.OperationId"
+        },
+        "removal_operation_id": {
+          "$ref": "#/$defs/extensions.control.OperationId"
+        },
+        "scope": {
+          "$ref": "#/$defs/extensions.control.DataScopeRef"
+        },
+        "authorization": {
+          "$ref": "#/$defs/extensions.control.ControlReceiptRef"
+        }
+      },
+      "required": [
+        "operation_id",
+        "removal_operation_id",
+        "scope",
+        "authorization"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.DataScopeRef": {
+      "title": "DataScopeRef",
+      "x-ess-name": "extensions.control.DataScopeRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.InstallationId": {
+      "title": "InstallationId",
+      "x-ess-name": "extensions.control.InstallationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.OperationId": {
+      "title": "OperationId",
+      "x-ess-name": "extensions.control.OperationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.OwnerReceiptRef": {
+      "title": "OwnerReceiptRef",
+      "x-ess-name": "extensions.control.OwnerReceiptRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.RetryAttempt": {
+      "title": "RetryAttempt",
+      "x-ess-name": "extensions.control.RetryAttempt",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value > 0"
+      ]
+    }
+  }
+}

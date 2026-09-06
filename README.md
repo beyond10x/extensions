@@ -3,8 +3,8 @@
 Public specifications for the foundation extension control service.
 
 This repository provides a **validated causal model draft**, generated JSON Schemas and a
-reproducible gate. Six commands describe installation activation and contribution registration,
-including failure and retry. It does not yet provide an installation server or runtime reconciler. The model is a draft contract; `v1` names its ESS system version, not a released API.
+reproducible gate. Eighteen commands describe activation, contribution registration, staged upgrade,
+removal, control detachment and separate scoped data destruction, including failure and retry. It does not yet provide an installation server or runtime reconciler. The model is a draft contract; `v1` names its ESS system version, not a released API.
 
 Extensions will own installation records, dependency resolution, bindings, policy and activation
 reconciliation. Agent Platform, Workflow and Connectors retain their runtime resources, execution
@@ -26,7 +26,9 @@ The source is [ess/system.yaml](ess/system.yaml), with
 
 [Binding and activation contracts](docs/model.md#binding-and-activation-proposal) distinguish stable
 owner registration identity from generation/attempt and keep current action authority separate
-from compatibility references. [Model decisions and open semantics](docs/model.md) explain what remains
+from compatibility references. [Upgrade and retention contracts](docs/model.md#upgrade-removal-and-retained-data-proposal)
+keep the selected release intact until candidate confirmation and separate control cleanup from
+authorized data destruction. [Model decisions and open semantics](docs/model.md) explain what remains
 `UNMAPPED:`. [Architecture scenarios](docs/scenarios.md) define the later operational evidence.
 Generated [entity schemas](contracts/schema/entities) expose the structural contract.
 
@@ -47,12 +49,13 @@ The gate checks formatting and Clippy, validates all ESS fragments, compiles the
 generates schemas twice and compares them against the committed outputs. Six mutated models
 must be refused for an unknown relation target, a mistyped relation carrier, a second owner, missing
 transition causation, a mistyped command instance carrier and a state-mutating refusal. The gate
-also asserts all six command transitions, typed input/event mappings and refusal outcomes.
+also asserts all eighteen command transitions, typed input/event mappings and refusal outcomes.
 These are compiler and structural-contract checks; runtime scenarios remain unimplemented.
 
 Schema fixtures also exercise configuration references, preinstallation identity, independent
 locks, scoped limits, count membership, both binding target forms, required/optional declarations,
-activation and registration progress, and all six command inputs and events. Numeric ESS invariants remain annotations in these
+activation/upgrade/removal progress, candidate readiness, retained-data policy, scoped destruction
+and all eighteen command inputs and events. Numeric ESS invariants remain annotations in these
 projections; the gate explicitly confirms that schema validation alone does not enforce them.
 The [configuration and policy proposal](docs/model.md#configuration-and-installation-policy-proposal)
 defines admission, retry and count requirements for the later runtime.
@@ -74,9 +77,11 @@ No private repository, deployment configuration or credential is required to bui
 this repository.
 
 Before implementation decomposition, resolve the model semantics needed by each proposed change.
-Typed configuration, policy, bindings and causal activation/recovery are draft model contracts.
+Typed configuration, policy, bindings, activation, upgrade, removal and scoped destruction are draft
+model contracts.
 The next designs must settle authenticated owner adapters, cross-record readiness, stable-key
-recovery, storage isolation, admission/update/removal commands and retained-data transitions. SDK evolution,
+recovery, storage isolation, admission/update commands, atomic selection/count changes and owner
+migration/detachment/data-destruction guarantees. SDK evolution,
 extension repository migrations and host implementation are separate work.
 
 ## License

@@ -4,92 +4,100 @@ id: executable-system-specification:extension-control-model
 kind: executable-system-specification
 status: draft
 title: Extension control domain model
-summary: Public structural ESS model for extension releases, tenant installations and contribution registration.
-revision: 7
+summary: Public causal ESS draft for extension activation, staged upgrades, confirmed removal and scoped data destruction.
+revision: 9
 ---
 # Extension control domain model
 
 ## Outcome
 
-The ESS sources under ess/ declare stable extension identity, immutable release declarations, named tenant-owned installations, contribution declarations and installation-specific registrations. The extensions component owns this control domain. Foundation-owned agents, runs, Connections, credentials and business data retain their existing owners.
+The ESS sources under ess/ declare stable extension identity, immutable release declarations,
+named tenant-owned installations, contribution declarations and installation-specific registrations.
+The extensions component owns these five control entities and their five ownership/reference
+relations. Foundation-owned agents, runs, Connections, credentials and business data retain their
+existing owners.
 
-## Scope and status
+## Current scope and maturity
 
-This is a validated structural draft with a reproducible compiler gate and no installation API or runtime. See [model decisions and UNMAPPED semantics](../../../docs/model.md) and [operational scenarios](../../../docs/scenarios.md). Implementation decomposition follows resolution of the semantics needed by each proposed change.
+This is an unreleased causal ESS model draft. It specifies configuration and policy, installation
+bindings, activation and registration recovery, upgrade selection, confirmed removal with data
+retention, and separately authorized data destruction. It contains no installation API or running
+service. See [model decisions and UNMAPPED semantics](../../../docs/model.md) and
+[operational scenarios](../../../docs/scenarios.md).
 
-## Verification
+The pinned ESS compiler validates lifecycle moves and typed causal event payloads. The model
+does not claim field assignment, authenticated owner admission, cross-record consistency,
+durable replay, atomic transactions or physical deletion. Runtime decomposition must first resolve
+the owner and persistence contracts needed by the proposed implementation.
 
-`cargo xtask check` passed using ESS 0.9.2 built from exact public source revision 6ef4af76b99a8d2cd861a3cc76140c88c1361129. The compiler validated three fragments and five entities. Two canonical compilations and two schema generations were byte-identical, and all 18 generated artifacts matched contracts/. Mutations introducing an unknown relation target, a wrong carrier type and a second owner each produced the required semantic refusal. Formatting and strict Clippy passed.
+## Configuration, policy and binding contract
 
-The gate originally recognized the mistyped-carrier diagnostic too narrowly; matching the compiler's observed type_mismatch code corrected the check. The unmodified model remained valid. Passing these checks does not establish operational installation, policy, recovery or authorization behavior.
+Each release declares its configuration schema and technical policy constraints. Each installation
+retains revisioned configuration and binding snapshots, trusted deployment identity, origin,
+admission retry key, effective policy and Held/Released count membership. Independent locks combine
+by logical OR, editable setting paths by exact intersection, and applicable count limits by the
+minimum in each scope. Admission reserves applicable scopes atomically; retries reuse identity.
 
-## Configuration and policy pass
+Bindings select targets and compatibility evidence without transferring owner-resource custody.
+Registration identity remains stable across retries of the same declaration intent. Activation
+requires the selected release's required contributions to be ready. Candidate upgrade registrations
+are separately scoped and do not grant selected-release readiness.
 
-This interactive pass extends the existing draft in ess/domains/extensions.yaml, its generated contracts, docs/model.md, docs/scenarios.md and the validation tooling. It does not decompose runtime stories or claim operational activation. Proposed value contracts keep the five existing entity relations unchanged.
+## Upgrade, removal and data retention
 
-Model proposal: each release declares an exact JSON Schema 2020-12 configuration contract and technical policy constraints. Each installation carries a revisioned immutable configuration-document reference, trusted deployment identity, requested/preinstalled origin, admission retry key, effective policy snapshot and Held/Released count membership. Configuration documents belong to the installation namespace and remain distinct from executable release artifacts and foundation credential custody.
+An upgrade stages exact current and candidate snapshots from the same Extension under a
+stable operation identity. Confirmation requires matching compatibility, admitted migration or
+preservation, and required-readiness evidence. Failed or refused work preserves the selected
+release, original configuration, business data and provenance. Independent version/configuration
+locks and current authority apply.
 
-Policy proposals: independent version, enable/disable, removal and configuration locks combine by logical OR; editable setting paths combine by exact intersection; applicable per-extension tenant/deployment count limits combine by minimum in each scope. An admitted installation holds capacity through pending, failed, disabled and removal-in-progress conditions. Only confirmed removal releases it. Admission and reservations across all applicable scopes must commit atomically; retries and deployment reconciliation reuse the same identity. These are normative draft requirements, not behavior established by JSON Schema validation.
+Removal inventories control registrations and resolves dependency, quiescence and detachment
+obligations. Held count membership persists until confirmed removal and is released once.
+Control detachment retains foundation-owned resources and business data. Retain is the default.
+Destruction requires its own authorized post-removal intent, exact data scope and owner result;
+ambiguous outcomes remain visible. The installation tombstone and provenance remain retained.
 
-Scope excludes new runtime commands, physical persistence/reservation algorithms, foundation bindings and external identity relation cardinalities. Remaining unknowns retain UNMAPPED markers. Verification will include compiler validation, deterministic projections and schema-positive/refusal fixtures. The public model stays draft for review.
+These are normative model requirements. Equality of evidence, authority checks, atomic field
+updates, durable owner recovery, retention duration, physical deletion and backup guarantees remain
+explicit runtime or UNMAPPED obligations.
 
-## Current verification
+## Historical verification
 
-`cargo xtask check` exited 0 for the configuration/policy draft: three ESS fragments, five entities, five explicit relations, no runtime commands, and 36 deterministic/current generated schemas. The existing three relation mutations were refused. JSON Schema controls accepted 15 examples and refused 26 malformed examples. Two checks confirm that positive configuration revisions and nonnegative counts remain ESS invariant annotations rather than JSON Schema assertions. Formatting and strict Clippy passed.
+The initial structural pass validated three ESS fragments, five entities and 18 deterministic
+schema artifacts. The configuration/policy pass expanded this to 36 schemas, 15 accepted and
+26 refused examples, with two numeric invariant annotation-gap controls.
 
-The first local invariant spelling used an unsupported name/expr object and ESS refused it as unobservable_fact with dependent undeclared_reference diagnostics. Reading the pinned compiler's predicate contract established the supported scalar form; the sources now declare `value > 0` and `value >= 0`, and validate successfully. Generated files were produced only by the pinned ESS generator.
+The published binding/activation model at f9688b9ff24e96b877522cdd3da613e6cb5977ed passed
+220 controls: six exact causal-command checks, six compiler refusal mutations, 75 accepted
+and 128 refused schema examples, and five numeric annotation-gap controls. It generated
+77 deterministic schemas. The adversary added 58 of those examples and separately refused
+36 causal IR mutants. These measurements describe that historical source, not the new model.
 
-The proposal remains draft. The 16 concrete configuration/policy cases in docs/scenarios.md are admission/runtime acceptance obligations, not passing runtime tests. No implementation decomposition was performed, so a decomposition critic panel does not apply. This was an interactive modeling pass; no non-interactive approval or bypass record was created.
+## Upgrade and retention verification
 
-## Binding and activation model pass
+The reviewed unit at 7a3a2404a50ddc6b7de7d541a6559e910fd90b37 passed the complete model
+gate with 646 controls: 18 exact causal-command controls, six compiler refusal mutations,
+184 accepted and 433 refused schema examples, and five numeric annotation-gap controls.
+All 128 generated schemas were deterministic and current; formatting and strict Clippy passed.
+All 203 original schema examples remain unchanged.
 
-This pass extends the existing five control entities with installation-scoped binding values and
-causal activation/recovery contracts. The source remains an unreleased ESS draft. It defines
-contribution readiness, durable retry identity and selected-release consistency as explicit model
-requirements, keeping authentication and owner resources with their foundation services.
+The deciding checks were written first and failed against the six-command model and missing
+new schema. Adversarial review retained 63 additional examples across two passes and separately
+refused ten causal IR mutants. The first pass found a declared-contract gap: pending candidate
+registrations could lack an admitted recovery path after upgrade failure, while removal required
+their settlement. Correction cf49dafee532fff9d85680704abacd4a19356dc7 explicitly permits
+authenticated observation-only recovery of the exact stored pending attempt after failure and
+during removal, without new dispatch, selected-readiness credit or reopened control reach.
+The second pass found no remaining or new defect. Its schema cases establish envelope shapes,
+not execution of that external guard.
 
-The model unit updates ess/, compiler-owned contracts/, schema fixtures, the Rust model gate and
-public model/scenario documentation. The pinned ESS compiler can validate causal lifecycle/event
-structure; field assignment, cross-record checks, physical namespace encoding and durable
-transactions remain runtime obligations. No implementation server, wire migration, SDK rename,
-upgrade/removal implementation or tagged release is included. Evidence will distinguish executed
-compiler/schema refusals from the future runtime scenarios.
+The unreleased draft adds optional progress/context fields and new state, refusal and failure
+variants. Historical backfill must use actual evidence; absence cannot establish successful
+readiness, cleanup, authorization or destruction. Strict old readers need a separately versioned
+migration before accepting the extended contract.
 
-## Binding and activation verification
-
-The candidate at 0c529f3b10dd84a111a303b9de1db8ef3941612a passed the complete model gate with
-the unchanged pinned ESS compiler: five entities/five relations, six causal commands with exact
-transitions/instances/event payloads/refusals, 77 deterministic schemas, six compiler refusal
-mutations, 55 accepted and 90 refused schema examples, and five numeric annotation-gap controls.
-Formatting and strict Clippy exited 0. The red-first causal check observed zero commands before
-the six-command draft was added; the new binding schema was absent before generation.
-
-The candidate adds binding target/compatibility values, required or optional contribution flags,
-activation/registration progress and stable owner registration keys distinct from generation and
-attempt counters. Commands operate on existing records; admission/allocation, configuration
-mutation, upgrades, removal and data destruction remain outside this pass.
-
-The original Recorded-progress fixture used null, but the pinned projection makes an Optional field
-omittable and refuses explicit null. Corrected positive examples omit the field and negative
-examples preserve the explicit-null refusal. This repairs the fixture's absence spelling rather
-than changing the model to satisfy it.
-
-Independent adversarial review and integration checks follow this candidate verification.
-The operational model remains draft: structural checks cannot establish authenticated owner
-admission, snapshot equality, required readiness, durable replay, atomic event/field persistence
-or physical installation isolation. Those requirements and unresolved owner contracts remain
-explicit in docs/model.md and docs/scenarios.md.
-
-## Adversarial result and integrated contract
-
-The independent pass found no defect in the bounded model. Its 58 added fixture cases cover
-error states/reasons, nested authority fields and required provenance; all 145 previous examples
-remain unchanged and selected. The complete gate now executes 220 controls: 75 accepted,
-128 refused, five annotation-gap controls, six causal-command checks and six compiler refusals.
-The reviewer separately exercised the actual causal checker with 36 altered IR documents;
-all were refused. These probes remain distinct from the gate's case count.
-
-The reviewed source is being integrated together with those retained regression cases. The
-compiler still generates 77 deterministic schemas. No runtime scenario or running installation
-service is claimed; owner admission, exact snapshot/state consistency, durable retry recovery and
-physical storage isolation remain the explicit implementation obligations.
+The compiler remains ESS 0.9.2 from exact public source
+6ef4af76b99a8d2cd861a3cc76140c88c1361129. Generated contracts are produced only through its
+generator. Operational scenarios remain future runtime acceptance obligations; no schema or
+compiler check is described as an executed runtime scenario. This model pass creates no tagged
+release and performs no runtime implementation decomposition.

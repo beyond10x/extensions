@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.AdmittedConfigurationMigration",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "9ecac55c1efc9a188a39c9af2634eec2e702d88e445a6aa6774e800e4a4ea28d",
+    "contract_digest": "9cffeb7a7636502ba6b031272b5cc1aedbfe5eb29442155f6bfd9152209df69d",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.AdmittedConfigurationMigration": {
+      "title": "AdmittedConfigurationMigration",
+      "x-ess-name": "extensions.control.AdmittedConfigurationMigration",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "contract": {
+          "$ref": "#/$defs/extensions.control.ArtifactReference"
+        },
+        "authorization": {
+          "$ref": "#/$defs/extensions.control.ControlReceiptRef"
+        },
+        "receipt": {
+          "$ref": "#/$defs/extensions.control.ControlReceiptRef"
+        }
+      },
+      "required": [
+        "contract",
+        "authorization",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ArtifactReference": {
+      "title": "ArtifactReference",
+      "x-ess-name": "extensions.control.ArtifactReference",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ControlReceiptRef": {
+      "title": "ControlReceiptRef",
+      "x-ess-name": "extensions.control.ControlReceiptRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    }
+  }
+}

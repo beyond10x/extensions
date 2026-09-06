@@ -1,0 +1,599 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RegistrationDetached payload",
+  "x-ess-name": "extensions.control.RegistrationDetached",
+  "x-ess-kind": "event-payload",
+  "type": "object",
+  "properties": {
+    "registration_id": {
+      "$ref": "#/$defs/extensions.control.RegistrationId"
+    },
+    "attempt": {
+      "$ref": "#/$defs/extensions.control.DetachmentAttempt"
+    },
+    "owner_registration_key": {
+      "$ref": "#/$defs/extensions.control.OwnerRegistrationKey"
+    },
+    "result": {
+      "$ref": "#/$defs/extensions.control.ControlDetachmentResult"
+    }
+  },
+  "required": [
+    "registration_id",
+    "attempt",
+    "owner_registration_key",
+    "result"
+  ],
+  "additionalProperties": false,
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "9ecac55c1efc9a188a39c9af2634eec2e702d88e445a6aa6774e800e4a4ea28d",
+    "contract_digest": "5732cb35cc1840a77f0536bb294851e925d9135adac5579046cbe2bf80a53b6d",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ActivationAttempt": {
+      "title": "ActivationAttempt",
+      "x-ess-name": "extensions.control.ActivationAttempt",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "generation": {
+          "$ref": "#/$defs/extensions.control.ReconciliationGeneration"
+        },
+        "attempt": {
+          "$ref": "#/$defs/extensions.control.RetryAttempt"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/extensions.control.ActivationSnapshot"
+        }
+      },
+      "required": [
+        "generation",
+        "attempt",
+        "snapshot"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ActivationSnapshot": {
+      "title": "ActivationSnapshot",
+      "x-ess-name": "extensions.control.ActivationSnapshot",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "release_id": {
+          "$ref": "#/$defs/extensions.control.ReleaseId"
+        },
+        "configuration": {
+          "$ref": "#/$defs/extensions.control.ConfigurationSnapshot"
+        },
+        "bindings": {
+          "$ref": "#/$defs/extensions.control.BindingSnapshot"
+        }
+      },
+      "required": [
+        "release_id",
+        "configuration",
+        "bindings"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ArtifactReference": {
+      "title": "ArtifactReference",
+      "x-ess-name": "extensions.control.ArtifactReference",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "location",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.BindingCompatibility": {
+      "title": "BindingCompatibility",
+      "x-ess-name": "extensions.control.BindingCompatibility",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/extensions.control.CompatibilityRevision"
+        },
+        "contract": {
+          "$ref": "#/$defs/extensions.control.ArtifactReference"
+        }
+      },
+      "required": [
+        "revision",
+        "contract"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.BindingName": {
+      "title": "BindingName",
+      "x-ess-name": "extensions.control.BindingName",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.BindingRevision": {
+      "title": "BindingRevision",
+      "x-ess-name": "extensions.control.BindingRevision",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value > 0"
+      ]
+    },
+    "extensions.control.BindingSelection": {
+      "title": "BindingSelection",
+      "x-ess-name": "extensions.control.BindingSelection",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/extensions.control.BindingName"
+        },
+        "target": {
+          "$ref": "#/$defs/extensions.control.BindingTarget"
+        },
+        "compatibility": {
+          "$ref": "#/$defs/extensions.control.BindingCompatibility"
+        }
+      },
+      "required": [
+        "name",
+        "target",
+        "compatibility"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.BindingSnapshot": {
+      "title": "BindingSnapshot",
+      "x-ess-name": "extensions.control.BindingSnapshot",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/extensions.control.BindingRevision"
+        },
+        "selections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/extensions.control.BindingSelection"
+          }
+        }
+      },
+      "required": [
+        "revision",
+        "selections"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.BindingTarget": {
+      "title": "BindingTarget",
+      "x-ess-name": "extensions.control.BindingTarget",
+      "x-ess-kind": "union",
+      "oneOf": [
+        {
+          "title": "foundation",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "foundation"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.FoundationBindingTarget"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "title": "installation",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "installation"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.InstallationBindingTarget"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "x-ess-union-tag": "kind"
+    },
+    "extensions.control.CapabilityRef": {
+      "title": "CapabilityRef",
+      "x-ess-name": "extensions.control.CapabilityRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.CompatibilityRevision": {
+      "title": "CompatibilityRevision",
+      "x-ess-name": "extensions.control.CompatibilityRevision",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ConfigurationDocumentKey": {
+      "title": "ConfigurationDocumentKey",
+      "x-ess-name": "extensions.control.ConfigurationDocumentKey",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ConfigurationRevision": {
+      "title": "ConfigurationRevision",
+      "x-ess-name": "extensions.control.ConfigurationRevision",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value > 0"
+      ]
+    },
+    "extensions.control.ConfigurationSnapshot": {
+      "title": "ConfigurationSnapshot",
+      "x-ess-name": "extensions.control.ConfigurationSnapshot",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/extensions.control.ConfigurationRevision"
+        },
+        "document_key": {
+          "$ref": "#/$defs/extensions.control.ConfigurationDocumentKey"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "revision",
+        "document_key",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.ContributionId": {
+      "title": "ContributionId",
+      "x-ess-name": "extensions.control.ContributionId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ControlDetachmentResult": {
+      "title": "ControlDetachmentResult",
+      "x-ess-name": "extensions.control.ControlDetachmentResult",
+      "x-ess-kind": "union",
+      "oneOf": [
+        {
+          "title": "never_dispatched",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "never_dispatched"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.ControlReceiptRef"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "title": "owner_confirmed",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "owner_confirmed"
+            },
+            "value": {
+              "$ref": "#/$defs/extensions.control.OwnerReceiptRef"
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "x-ess-union-tag": "kind"
+    },
+    "extensions.control.ControlReceiptRef": {
+      "title": "ControlReceiptRef",
+      "x-ess-name": "extensions.control.ControlReceiptRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.DetachmentAttempt": {
+      "title": "DetachmentAttempt",
+      "x-ess-name": "extensions.control.DetachmentAttempt",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "removal": {
+          "$ref": "#/$defs/extensions.control.RemovalAttempt"
+        },
+        "target": {
+          "$ref": "#/$defs/extensions.control.RegistrationCleanupTarget"
+        },
+        "attempt": {
+          "$ref": "#/$defs/extensions.control.RetryAttempt"
+        }
+      },
+      "required": [
+        "removal",
+        "target",
+        "attempt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.FoundationBindingTarget": {
+      "title": "FoundationBindingTarget",
+      "x-ess-name": "extensions.control.FoundationBindingTarget",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "capability": {
+          "$ref": "#/$defs/extensions.control.CapabilityRef"
+        }
+      },
+      "required": [
+        "capability"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.InstallationBindingTarget": {
+      "title": "InstallationBindingTarget",
+      "x-ess-name": "extensions.control.InstallationBindingTarget",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "installation_id": {
+          "$ref": "#/$defs/extensions.control.InstallationId"
+        },
+        "capability": {
+          "$ref": "#/$defs/extensions.control.CapabilityRef"
+        }
+      },
+      "required": [
+        "installation_id",
+        "capability"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.InstallationId": {
+      "title": "InstallationId",
+      "x-ess-name": "extensions.control.InstallationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.OperationId": {
+      "title": "OperationId",
+      "x-ess-name": "extensions.control.OperationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.OwnerReceiptRef": {
+      "title": "OwnerReceiptRef",
+      "x-ess-name": "extensions.control.OwnerReceiptRef",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.OwnerRegistrationKey": {
+      "title": "OwnerRegistrationKey",
+      "x-ess-name": "extensions.control.OwnerRegistrationKey",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ReconciliationGeneration": {
+      "title": "ReconciliationGeneration",
+      "x-ess-name": "extensions.control.ReconciliationGeneration",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value > 0"
+      ]
+    },
+    "extensions.control.RegistrationAttempt": {
+      "title": "RegistrationAttempt",
+      "x-ess-name": "extensions.control.RegistrationAttempt",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "installation_id": {
+          "$ref": "#/$defs/extensions.control.InstallationId"
+        },
+        "contribution_id": {
+          "$ref": "#/$defs/extensions.control.ContributionId"
+        },
+        "activation": {
+          "$ref": "#/$defs/extensions.control.ActivationAttempt"
+        },
+        "attempt": {
+          "$ref": "#/$defs/extensions.control.RetryAttempt"
+        },
+        "upgrade": {
+          "$ref": "#/$defs/extensions.control.UpgradeAttempt"
+        }
+      },
+      "required": [
+        "installation_id",
+        "contribution_id",
+        "activation",
+        "attempt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.RegistrationCleanupTarget": {
+      "title": "RegistrationCleanupTarget",
+      "x-ess-name": "extensions.control.RegistrationCleanupTarget",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "registration_id": {
+          "$ref": "#/$defs/extensions.control.RegistrationId"
+        },
+        "owner_registration_key": {
+          "$ref": "#/$defs/extensions.control.OwnerRegistrationKey"
+        },
+        "registration": {
+          "$ref": "#/$defs/extensions.control.RegistrationAttempt"
+        }
+      },
+      "required": [
+        "registration_id",
+        "owner_registration_key",
+        "registration"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.RegistrationId": {
+      "title": "RegistrationId",
+      "x-ess-name": "extensions.control.RegistrationId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.ReleaseId": {
+      "title": "ReleaseId",
+      "x-ess-name": "extensions.control.ReleaseId",
+      "x-ess-kind": "newtype",
+      "type": "string"
+    },
+    "extensions.control.RemovalAttempt": {
+      "title": "RemovalAttempt",
+      "x-ess-name": "extensions.control.RemovalAttempt",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/extensions.control.RemovalIntent"
+        },
+        "attempt": {
+          "$ref": "#/$defs/extensions.control.RetryAttempt"
+        }
+      },
+      "required": [
+        "intent",
+        "attempt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.RemovalIntent": {
+      "title": "RemovalIntent",
+      "x-ess-name": "extensions.control.RemovalIntent",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/extensions.control.OperationId"
+        },
+        "selected": {
+          "$ref": "#/$defs/extensions.control.ActivationSnapshot"
+        },
+        "retention": {
+          "$ref": "#/$defs/extensions.control.RetentionPolicy"
+        },
+        "registrations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/extensions.control.RegistrationCleanupTarget"
+          }
+        }
+      },
+      "required": [
+        "operation_id",
+        "selected",
+        "retention",
+        "registrations"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.RetentionPolicy": {
+      "title": "RetentionPolicy",
+      "x-ess-name": "extensions.control.RetentionPolicy",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Retain"
+      ]
+    },
+    "extensions.control.RetryAttempt": {
+      "title": "RetryAttempt",
+      "x-ess-name": "extensions.control.RetryAttempt",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value > 0"
+      ]
+    },
+    "extensions.control.UpgradeAttempt": {
+      "title": "UpgradeAttempt",
+      "x-ess-name": "extensions.control.UpgradeAttempt",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "intent": {
+          "$ref": "#/$defs/extensions.control.UpgradeIntent"
+        },
+        "generation": {
+          "$ref": "#/$defs/extensions.control.ReconciliationGeneration"
+        },
+        "attempt": {
+          "$ref": "#/$defs/extensions.control.RetryAttempt"
+        }
+      },
+      "required": [
+        "intent",
+        "generation",
+        "attempt"
+      ],
+      "additionalProperties": false
+    },
+    "extensions.control.UpgradeIntent": {
+      "title": "UpgradeIntent",
+      "x-ess-name": "extensions.control.UpgradeIntent",
+      "x-ess-kind": "struct",
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/extensions.control.OperationId"
+        },
+        "current": {
+          "$ref": "#/$defs/extensions.control.ActivationSnapshot"
+        },
+        "candidate": {
+          "$ref": "#/$defs/extensions.control.ActivationSnapshot"
+        }
+      },
+      "required": [
+        "operation_id",
+        "current",
+        "candidate"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

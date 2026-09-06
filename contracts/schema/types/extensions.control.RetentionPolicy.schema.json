@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.RetentionPolicy",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "9ecac55c1efc9a188a39c9af2634eec2e702d88e445a6aa6774e800e4a4ea28d",
+    "contract_digest": "bf2b2bd7f554517f845e8925778ae8d5cce951ff086d092c1c7a50e3c129d335",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.RetentionPolicy": {
+      "title": "RetentionPolicy",
+      "x-ess-name": "extensions.control.RetentionPolicy",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Retain"
+      ]
+    }
+  }
+}
