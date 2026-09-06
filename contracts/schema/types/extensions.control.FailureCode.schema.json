@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.FailureCode",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
+    "contract_digest": "776b195f1e2114544ab9bb1df50c6cea37c96dffcab12928458b556b7d3e49b4",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.FailureCode": {
+      "title": "FailureCode",
+      "x-ess-name": "extensions.control.FailureCode",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "OwnerUnavailable",
+        "OwnerRefused",
+        "BindingUnavailable",
+        "IncompatibleBinding",
+        "RequiredContributionFailed",
+        "InvalidConfiguration"
+      ]
+    }
+  }
+}

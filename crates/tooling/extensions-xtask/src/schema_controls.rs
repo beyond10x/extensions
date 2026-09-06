@@ -51,9 +51,13 @@ pub fn check(root: &Path) -> Result<()> {
     }
     // ESS 0.9.2 projects these predicates as annotations, not JSON Schema assertions.
     // Keep that boundary executable: a passing schema check must not be sold as admission.
+    let mut gaps = 0;
     for (name, predicate, invalid_domain_value) in [
         ("ConfigurationRevision", "value > 0", 0),
         ("InstallationCount", "value >= 0", -1),
+        ("BindingRevision", "value > 0", 0),
+        ("ReconciliationGeneration", "value > 0", 0),
+        ("RetryAttempt", "value > 0", 0),
     ] {
         let qualified = format!("extensions.control.{name}");
         let schema: Value = serde_json::from_slice(&fs::read(
@@ -70,9 +74,10 @@ pub fn check(root: &Path) -> Result<()> {
             validator.is_valid(&Value::from(invalid_domain_value)),
             "ESS invariant projection changed; reassess the documented admission boundary"
         );
+        gaps += 1;
     }
     println!(
-        "schema controls: {accepted} accepted, {refused} refused; 2 invariant annotation gaps confirmed"
+        "schema controls: {accepted} accepted, {refused} refused; {gaps} invariant annotation gaps confirmed"
     );
     Ok(())
 }

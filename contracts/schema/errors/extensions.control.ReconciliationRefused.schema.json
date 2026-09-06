@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReconciliationRefused payload",
+  "description": "Current authority, snapshot, release, owner evidence or readiness checks refused.",
+  "x-ess-name": "extensions.control.ReconciliationRefused",
+  "x-ess-kind": "error-payload",
+  "type": "object",
+  "properties": {
+    "reason": {
+      "$ref": "#/$defs/extensions.control.ReconciliationRefusalReason"
+    }
+  },
+  "required": [
+    "reason"
+  ],
+  "additionalProperties": false,
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
+    "contract_digest": "4f07b29188f0e65074f40bf911f144858986a63f6cd3c08ed12221a0b350c22d",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ReconciliationRefusalReason": {
+      "title": "ReconciliationRefusalReason",
+      "x-ess-name": "extensions.control.ReconciliationRefusalReason",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Unauthorized",
+        "StaleSnapshot",
+        "ReleaseMismatch",
+        "RequiredNotReady",
+        "OwnerNotReady",
+        "IncompatibleBinding",
+        "RetryConflict",
+        "InvalidEvidence"
+      ]
+    }
+  }
+}
