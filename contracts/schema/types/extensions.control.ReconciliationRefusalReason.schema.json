@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.ReconciliationRefusalReason",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
+    "contract_digest": "6361e42d84f223a5a48fee34b767564526eedee6145e3a335eb76cfc8677ccb1",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ReconciliationRefusalReason": {
+      "title": "ReconciliationRefusalReason",
+      "x-ess-name": "extensions.control.ReconciliationRefusalReason",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Unauthorized",
+        "StaleSnapshot",
+        "ReleaseMismatch",
+        "RequiredNotReady",
+        "OwnerNotReady",
+        "IncompatibleBinding",
+        "RetryConflict",
+        "InvalidEvidence"
+      ]
+    }
+  }
+}

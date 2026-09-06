@@ -4,4 +4,20 @@ components:
     owns:
       domains:
         - extensions.control
-    # No command, event or network API is claimed by this structural model.
+    # Causal domain commands and events; no network endpoint or runtime server is declared.
+    accepts:
+      commands:
+        - extensions.control.BeginActivation
+        - extensions.control.ConfirmActivation
+        - extensions.control.FailActivation
+        - extensions.control.BeginRegistration
+        - extensions.control.ConfirmRegistration
+        - extensions.control.FailRegistration
+    publishes:
+      events:
+        - extensions.control.ActivationBegun
+        - extensions.control.InstallationActivated
+        - extensions.control.ActivationFailed
+        - extensions.control.RegistrationBegun
+        - extensions.control.ContributionReady
+        - extensions.control.RegistrationFailed

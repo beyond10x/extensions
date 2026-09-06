@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.BindingRevision",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
+    "contract_digest": "d9a7af3c1fa4a569d264b82b323fb0545b58e1fe0aaabe36c62fe0cbf7c78087",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.BindingRevision": {
+      "title": "BindingRevision",
+      "x-ess-name": "extensions.control.BindingRevision",
+      "x-ess-kind": "newtype",
+      "type": "integer",
+      "x-ess-invariants": [
+        "value > 0"
+      ]
+    }
+  }
+}

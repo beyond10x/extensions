@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/extensions.control.ContributionRequirement",
+  "x-ess-provenance": {
+    "system": "extensions",
+    "specification_version": "v1",
+    "source_digest": "5696752ab901442b2de333406f663cbc440f60656f83bb1ab387b776a6a09169",
+    "contract_digest": "c4b56aab579b28cc13c5c19b29ed101041114fb1250e5bb1acde9df8da6195a5",
+    "regenerate": "ess generate"
+  },
+  "$defs": {
+    "extensions.control.ContributionRequirement": {
+      "title": "ContributionRequirement",
+      "x-ess-name": "extensions.control.ContributionRequirement",
+      "x-ess-kind": "enum",
+      "type": "string",
+      "enum": [
+        "Required",
+        "Optional"
+      ]
+    }
+  }
+}

@@ -2,7 +2,8 @@ format: ess/1
 system: extensions
 version: v1
 summary: >-
-  Structural control-domain model for independently released extensions and named tenant
-  installations. Runtime activation, authorization and policy behavior remain to be specified.
+  Draft causal control-domain model for independently released extensions and named tenant
+  installations. Binding and activation contracts are declared; runtime execution, authorization
+  and persistence remain unimplemented.
 domains:
   - extensions.control
