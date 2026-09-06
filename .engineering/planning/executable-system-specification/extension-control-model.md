@@ -5,7 +5,7 @@ kind: executable-system-specification
 status: draft
 title: Extension control domain model
 summary: Public structural ESS model for extension releases, tenant installations and contribution registration.
-revision: 4
+revision: 5
 ---
 # Extension control domain model
 
@@ -40,3 +40,17 @@ Scope excludes new runtime commands, physical persistence/reservation algorithms
 The first local invariant spelling used an unsupported name/expr object and ESS refused it as unobservable_fact with dependent undeclared_reference diagnostics. Reading the pinned compiler's predicate contract established the supported scalar form; the sources now declare `value > 0` and `value >= 0`, and validate successfully. Generated files were produced only by the pinned ESS generator.
 
 The proposal remains draft. The 16 concrete configuration/policy cases in docs/scenarios.md are admission/runtime acceptance obligations, not passing runtime tests. No implementation decomposition was performed, so a decomposition critic panel does not apply. This was an interactive modeling pass; no non-interactive approval or bypass record was created.
+
+## Binding and activation model pass
+
+This pass extends the existing five control entities with installation-scoped binding values and
+causal activation/recovery contracts. The source remains an unreleased ESS draft. It defines
+contribution readiness, durable retry identity and selected-release consistency as explicit model
+requirements, keeping authentication and owner resources with their foundation services.
+
+The model unit updates ess/, compiler-owned contracts/, schema fixtures, the Rust model gate and
+public model/scenario documentation. The pinned ESS compiler can validate causal lifecycle/event
+structure; field assignment, cross-record checks, physical namespace encoding and durable
+transactions remain runtime obligations. No implementation server, wire migration, SDK rename,
+upgrade/removal implementation or tagged release is included. Evidence will distinguish executed
+compiler/schema refusals from the future runtime scenarios.
