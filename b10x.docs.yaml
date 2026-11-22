@@ -35,10 +35,7 @@ surfaces:
   maturity: experimental
   name: Extensions
   primaryJourney: specify
-  relationships:
-  - kind: uses
-    label: ESS owns semantic compilation and validation.
-    target: ess/docs
+  relationships: []
   routeBase: /docs/extensions/
   sections:
   - kind: docs
